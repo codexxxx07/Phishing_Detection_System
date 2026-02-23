@@ -186,7 +186,7 @@ function scanThreat() {
   progress.style.width = "0%";
 
   startLoadingSimulation(function () {
-  analyze(input);
+    analyze(input);
   });
 }
 
@@ -229,7 +229,6 @@ function analyze(input) {
 
 // loading bar
 function startLoadingSimulation(callback) {
-
   const progressBar = document.getElementById("progressBar");
   const progressText = document.getElementById("progressText");
 
@@ -240,7 +239,7 @@ function startLoadingSimulation(callback) {
     "🧠 Running AI threat engine...",
     "🔄 Rechecking anomalies...",
     "⚡ Almost done...",
-    "✅ Scan completed."
+    "✅ Scan completed.",
   ];
 
   let width = 0;
@@ -250,7 +249,6 @@ function startLoadingSimulation(callback) {
   progressText.innerText = "";
 
   const interval = setInterval(() => {
-
     if (width >= 100) {
       clearInterval(interval);
       progressText.innerText = "Scan completed ✔";
@@ -264,7 +262,6 @@ function startLoadingSimulation(callback) {
         index++;
       }
     }
-
   }, 500);
 }
 
@@ -371,8 +368,8 @@ function scanEmail() {
 
   // Progress bar animation
   startLoadingSimulation("emailLoadingText", function () {
-  const result = analyzeEmailContent(from, subject, body);
-  displayEmailResult(result);
+    const result = analyzeEmailContent(from, subject, body);
+    displayEmailResult(result);
   });
 }
 
@@ -586,8 +583,8 @@ function scanSpear() {
   const progress = document.getElementById("spearProgressBar");
   progress.style.width = "0%";
   startLoadingSimulation("spearLoadingText", function () {
-  const result = analyzeSpearContent(from, to, recipientName, subject, body);
-  displaySpearResult(result);
+    const result = analyzeSpearContent(from, to, recipientName, subject, body);
+    displaySpearResult(result);
   });
 }
 
@@ -799,34 +796,36 @@ function displaySpearResult(result) {
 
 const fadeSections = document.querySelectorAll(".fade-section");
 
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add("show");
-    }
-  });
-}, {
-  threshold: 0.2
-});
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("show");
+      }
+    });
+  },
+  {
+    threshold: 0.2,
+  },
+);
 
-fadeSections.forEach(section => {
+fadeSections.forEach((section) => {
   observer.observe(section);
 });
 
+function animateCounter(id, target) {
+  let count = 0;
+  const speed = 20;
+  const increment = Math.ceil(target / 30);
 
-function animateCounter(id, target){
-    let count = 0;
-    const speed = 20;
-    const increment = Math.ceil(target / 30);
+  const interval = setInterval(() => {
+    count += increment;
 
-    const interval = setInterval(() => {
-        count += increment;
-
-        if(count >= target){
-            document.getElementById(id).innerText = target;
-            clearInterval(interval);
-        } else {
-            document.getElementById(id).innerText = count;
-        }
-    }, speed);
+    if (count >= target) {
+      document.getElementById(id).innerText = target;
+      clearInterval(interval);
+    } else {
+      document.getElementById(id).innerText = count;
+    }
+  }, speed);
 }
