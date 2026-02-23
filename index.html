@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>CODEX AI Cyber Shield</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Chart CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+
+    <!-- MATRIX ENTRY SCREEN -->
+    <div id="matrixScreen">
+      <canvas id="matrixCanvas"></canvas>
+
+      <div class="centerBox">
+        <!-- <h1>WELCOME TO CYBER SHIELD</h1> -->
+        <h1 id="welcomeTyping"></h1>
+        <button id="enterBtn">ENTER</button>
+      </div>
+    </div>
+
+    <!-- MAIN WEBSITE -->
+    
+    <div id="mainContent">
+      <!-- NAVBAR -->
+      <nav>
+        <div class="logo">CODEX AI</div>
+        <div>
+          <a href="#home">Home</a>
+          <a href="#scanner">Threat Scanner</a>
+          <a href="#phishing">Phishing Types</a>
+          <a href="#dashboard">Dashboard</a>
+          <a href="#teamSection">About Us</a>
+        </div>
+      </nav>
+
+  
+      <!-- HOME -->
+      <section id="home" class="fade-section">
+        <h1>AI-Powered Phishing Detection Platform</h1>
+        <p>Protecting College Students in Real-Time</p>
+      </section>
+
+      <!-- SCANNER -->
+      <section id="scanner" class="fade-section">
+        <h2>Threat Scanner</h2>
+        <input type="text" id="urlInput" placeholder="Enter URL or Message" />
+        <button onclick="scanThreat()">Scan Now</button>
+
+        <div class="progress-container">
+          <div class="progress">
+            <div id="progressBar"></div>
+          </div>
+          <p id="progressText" class="loading-text"></p>
+        </div>
+
+        <h3 id="result"></h3>
+      </section>
+
+      <!-- EMAIL SCANNER (hidden by default) -->
+      <section id="emailScanner" style="display: none;">
+        <h2>📧 Email Phishing Scanner</h2>
+        <input type="email" id="emailFrom" placeholder="From (e.g., support@paypal.com)" />
+        <input type="text" id="emailSubject" placeholder="Subject" />
+        <textarea id="emailBody" placeholder="Email body content..." rows="5" style="width:60%; background:black; border:1px solid #00ff99; color:#00ff99; padding:10px;"></textarea>
+        <br/>
+        <button onclick="scanEmail()">Scan Email</button>
+        <button onclick="showUrlScanner()">← Back to URL Scanner</button>
+
+        <div class="progress">
+          <div id="emailProgressBar"></div>
+        </div>
+
+          <h3 id="emailResult"></h3>
+      </section>
+
+      <!-- SPEAR PHISHING SCANNER (hidden by default) -->
+      <section id="spearScanner" style="display: none;">
+       <h2>🎯 Spear Phishing Scanner</h2>
+       <input type="email" id="spearFrom" placeholder="From (e.g., ceo@company.com)" />
+       <input type="email" id="spearTo" placeholder="To (your email address)" />
+       <input type="text" id="spearName" placeholder="Your Name (as used in emails)" />
+       <input type="text" id="spearSubject" placeholder="Subject" />
+       <textarea id="spearBody" placeholder="Email body content..." rows="5" style="width:60%; background:black; border:1px solid #00ff99; color:#00ff99; padding:10px;"></textarea>
+       <br/>
+       <button onclick="scanSpear()">Scan for Spear Phishing</button>
+       <button onclick="showUrlScanner()">← Back to URL Scanner</button>
+
+      <div class="progress">
+       <div id="spearProgressBar"></div>
+      </div>
+
+       <h3 id="spearResult"></h3>
+      </section>
+
+      <!-- PHISHING TYPES -->
+      <section id="phishing" class="fade-section">
+        <h2>Types of Phishing</h2>
+        <div class="card-container">
+          <div class="card">Email Phishing</div>
+          <div class="card">Spear Phishing</div>
+          <div class="card">Whaling</div>
+          <div class="card">Smishing</div>
+          <div class="card">Vishing</div>
+          <div class="card">Clone Phishing</div>
+          <div class="card">Quishing</div>
+          <div class="card">Angler Phishing</div>
+          <div class="card">HTTPS Phishing</div>
+          <div class="card">Evil Twin</div>
+        </div>
+      </section>
+
+      <!-- DASHBOARD -->
+      <section id="dashboard" class="fade-section">
+      <h2 class="dashboard-title">CYBER ANALYTICS PANEL</h2>
+      <h2>Threat Dashboard</h2>
+    
+      <div class="stats-container">
+
+        <div class="stat-card">
+            <h3>Total Scans</h3>
+            <p id="totalScans">0</p>
+            <span class="stat-sub">System Activity</span>
+        </div>
+
+        <div class="stat-card">
+            <h3>Safe</h3>
+            <p id="safeCountDisplay">0</p>
+            <span class="stat-sub">Secure Results</span>
+        </div>
+
+        <div class="stat-card">
+            <h3>High Risk</h3>
+            <p id="riskCountDisplay">0</p>
+            <span class="stat-sub">Detected Threats</span>
+        </div>
+
+      </div>
+
+      <div class="chart-container">
+          <canvas id="threatChart"></canvas>
+          <p id="noDataText">No scans yet. Start scanning to see analytics.</p>
+      </div>
+  </section>
+
+
+      <!-- TEAM -->
+      <section id="teamSection" class="fade-section">   
+
+      <div class="team-wrapper">
+
+        <!-- LEFT PROFILE CARD -->
+        <div class="profile-card">
+
+            <div class="profile-img">
+                <img id="memberImage" src="assets/krish.png">
+            </div>
+
+            <h2 id="memberName">Krish</h2>
+            <h4 id="memberRole">Lead Developer</h4>
+
+            <p id="memberDesc">
+                The force that turns bold ideas into flawlessly executed reality.
+            </p>
+
+            <div class="social-icons">
+                <a id="instaLink" href="https://www.instagram.com/_k_r_i_s_h_x_?igsh=d254M25mZzFmazRv" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a id="linkedinLink" href="https://www.linkedin.com/in/krishanjit-chakraborty-258a5237a?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                <a id="githubLink" href="https://github.com/codexxxx07" target="_blank"><i class="fab fa-github"></i></a>
+            </div>
+
+        </div>
+
+        <!-- RIGHT SIDE NAME LIST -->
+        <div class="name-list">
+
+            <h1 id="typingTitle" class="team-heading"></h1>
+
+            <div class="team-name active"
+                data-img="assets/krish.png"
+                data-name="Krish"
+                data-role="Lead Developer"
+                data-desc="Built the complete website architecture and AI logic system"
+                data-insta="https://www.instagram.com/_k_r_i_s_h_x_?igsh=d254M25mZzFmazRv"
+                data-linkedin="https://www.linkedin.com/in/krishanjit-chakraborty-258a5237a?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
+                data-github="https://github.com/codexxxx07">
+                <span>KRISH</span>
+            </div>
+
+            <div class="team-name"
+                data-img="assets/Deb.jpeg"
+                data-name="Debrup"
+                data-role="JS Engineer"
+                data-desc="Assisted in website development and JS functionalities"
+                data-insta="https://www.instagram.com/sick_loosing?igsh=NnRyaGJwenM0Nzkx"
+                data-linkedin="https://in.linkedin.com/in/debrup-bhattacherjee-41b728387"
+                data-github="https://github.com/debrupbhattacherjee">
+                <span>DEBRUP</span>
+            </div>
+
+            <div class="team-name"
+                data-img="assets/Shreya.jpeg"
+                data-name="Shreya"
+                data-role="UI/UX Designer"
+                data-desc="Designed the website interface and user experience"
+                data-insta="https://www.instagram.com/ame.thyst_25?utm_source=qr&igsh=MnRnczk4ZngwaDE4"
+                data-linkedin="https://www.linkedin.com/in/shreya-saha-375b52350?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
+                data-github="#">
+                <span>SHREYA</span>
+            </div>
+
+            <div class="team-name"
+                data-img="assets/Ghost.jpeg"
+                data-name="Prithviraj"
+                data-role="Research Lead"
+                data-desc="Handled phishing research and documentation"
+                data-insta="https://www.instagram.com/callme_by_ghost?igsh=OXI4OWwwM3IxajNm"
+                data-linkedin="https://www.linkedin.com/in/prithviraj-guha-a564a5388?utm_source=share_via&utm_content=profile&utm_medium=member_android"
+                data-github="https://github.com/prithvirajguha03-ai">
+                <span>PRITHIVIRAJ</span>
+            </div>
+
+            <div class="team-name"
+                data-img="assets/Sahil.jpeg"
+                data-name="Sahil"
+                data-role="PPT Maker"
+                data-desc="Created Cyber Security PPTs"
+                data-insta="https://www.instagram.com/the_bcatrader_?utm_source=qr&igsh=bzNqNTE4NmNucWFz"
+                data-linkedin="https://www.linkedin.com/in/sahil-akter-838a22378?utm_source=share_via&utm_content=profile&utm_medium=member_android"
+                data-github="https://github.com/Thebcatrader">
+                <span>SAHIL</span>
+            </div>
+
+            <div class="team-name"
+                data-img="assets/Ankush.jpeg"
+                data-name="Ankush"
+                data-role="Content Curator"
+                data-desc="Manages website and PPT content, documentation, and updates"
+                data-insta="https://www.instagram.com/ankush_sf?igsh=MW9maHZhNGxsMWpmNg=="
+                data-linkedin="https://www.linkedin.com/in/ankush-chatterjee-7a509b325?utm_source=share_via&utm_content=profile&utm_medium=member_android"
+                data-github="https://github.com/QUITX7STORX">
+                <span>ANKUSH</span>
+            </div>
+        </div>
+      </div>
+      </section>
+      <footer class="footer">
+      <p>© 2026 CODEX AI Cyber Shield | Built by Team CODEX | All Rights Reserved.</p>
+      </footer>
+    <!-- JS -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+    <script src="script.js"></script>
+  </body>
+</html>

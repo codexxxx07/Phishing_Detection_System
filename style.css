@@ -1,0 +1,676 @@
+body{
+    margin:0;
+    font-family: monospace;
+    background:#0f0f0f;
+    color:#00ff99;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+}
+
+
+#mainContent{
+    display:none;
+    flex:1;
+}
+
+nav{
+    background:#111;
+    padding:15px;
+    display:flex;
+    justify-content:space-between;
+}
+
+nav a{
+    color:#00ff99;
+    margin:0 10px;
+    text-decoration:none;
+}
+
+nav a:hover{
+    border-bottom:2px solid #00ff99;
+}
+
+section{
+    padding:60px;
+    text-align:center;
+}
+
+input{
+    padding:10px;
+    width:60%;
+    background:black;
+    border:1px solid #00ff99;
+    color:#00ff99;
+}
+
+button{
+    padding:10px 20px;
+    background:#00ff99;
+    border:none;
+    cursor:pointer;
+}
+
+
+/* From Uiverse.io by mobinkakei */ 
+#enterBtn {
+  --color1: #1a8516;
+  --color2: #236b19;
+  perspective: 1000px;
+  padding: 1em 1em;
+  background: linear-gradient(var(--color1), var(--color2));
+  border: none;
+  outline: none;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: #fff;
+  text-shadow: 0 10px 10px #000;
+  cursor: pointer;
+  transform: rotateX(70deg) rotateZ(30deg);
+  transform-style: preserve-3d;
+  transition: transform 0.5s;
+}
+
+#enterBtn::before {
+  content: "";
+  width: 100%;
+  height: 15px;
+  background-color: var(--color2);
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  transform: rotateX(90deg);
+  transform-origin: bottom;
+}
+
+#enterBtn::after {
+  content: "";
+  width: 15px;
+  height: 100%;
+  background-color: var(--color1);
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: rotateY(-90deg);
+  transform-origin: right;
+}
+
+#enterBtn:hover {
+  transform: rotateX(30deg) rotateZ(0);
+}
+
+.progress-container {
+  text-align: center;
+  width: 100%;
+}
+
+.progress {
+  width: 300px;
+  height: 10px;
+  background: #111;
+  border: 1px solid #00ff99;
+  margin: 15px auto;
+  overflow: hidden;
+}
+
+#progressBar {
+  height: 100%;
+  width: 0%;
+  background: #00ff99;
+  transition: width 0.4s ease;
+}
+
+.loading-text {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #00ff99;
+}
+
+.card-container{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+}
+
+.card{
+    background:#111;
+    border:1px solid #00ff99;
+    padding:20px;
+    margin:10px;
+    width:200px;
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:scale(1.1);
+    box-shadow:0 0 15px #00ff99;
+}
+
+.team-container{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+}
+
+.member{
+    padding:20px;
+    margin:10px;
+    border:1px solid #00ff99;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.member:hover{
+    background:#00ff99;
+    color:black;
+}
+
+#roleDisplay{
+    margin-top:20px;
+    font-size:18px;
+}
+
+/* MATRIX SCREEN */
+#matrixScreen{
+    position:fixed;
+    width:100%;
+    height:100vh;
+    overflow:hidden;
+    background:black;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+#matrixCanvas{
+    position:absolute;
+    width:100%;
+    height:100%;
+}
+
+.centerBox{
+    position:relative;
+    text-align:center;
+    z-index:2;
+}
+
+.centerBox h1{
+    color:#00ff99;
+    margin-bottom:20px;
+    text-shadow:0 0 15px #00ff99;
+}
+
+#enterBtn{
+    padding:15px 40px;
+    font-size:20px;
+    background:transparent;
+    border:2px solid #00ff99;
+    color:#00ff99;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+#enterBtn:hover{
+    background:#00ff99;
+    color:black;
+    box-shadow:0 0 20px #00ff99;
+}
+
+#teamSection{
+    padding:80px;
+    background:#1a1a1a;
+}
+
+.team-wrapper{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+}
+
+/* PROFILE CARD */
+.profile-card{
+    width:350px;
+    background:#f5f5f5;
+    padding:40px;
+    border-radius:25px;
+    text-align:center;
+
+    /* 3D Shadow */
+    box-shadow:
+        8px 8px 0px #000,
+        12px 12px 20px rgba(0,0,0,0.3);
+
+    transition:transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* Hover lift effect */
+.profile-card:hover{
+    transform:translateY(-10px);
+    box-shadow:
+        12px 12px 0px #000,
+        20px 20px 25px rgba(0,0,0,0.4);
+}
+
+
+.profile-img img{
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    border:4px solid black;
+}
+
+.profile-card h2{
+    margin:15px 0 5px 0;
+    font-weight:bold;
+    color:black;
+}
+
+.profile-card h4{
+    color:gray;
+    margin-bottom:15px;
+}
+
+.profile-card p{
+    color:black;
+    font-weight:600;
+}
+
+.profile-img img{
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    border:4px solid black;
+    transition:0.4s ease;
+}
+
+.profile-card:hover .profile-img img{
+    transform:scale(1.05);
+}
+
+.social-icons{
+    margin-top:20px;
+}
+
+.social-icons a{
+    display:inline-flex;
+    justify-content:center;
+    align-items:center;
+    width:40px;
+    height:40px;
+    border:2px solid black;
+    border-radius:50%;
+    margin:0 5px;
+    text-decoration:none;
+    color:black;
+    font-weight:bold;
+}
+
+/* Smooth animation base */
+.profile-card{
+    width:350px;
+    background:#f5f5f5;
+    padding:40px;
+    border-radius:25px;
+    text-align:center;
+    box-shadow:8px 8px 0px #000;
+    transition:transform 0.5s cubic-bezier(.77,0,.18,1),
+               box-shadow 0.5s cubic-bezier(.77,0,.18,1);
+}
+
+/* Slide effect */
+.profile-card.animate{
+    transform:translateX(-15px);
+    box-shadow:15px 15px 0px #000;
+}
+
+/* Image smooth scale + rotate */
+.profile-img img{
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    border:4px solid black;
+    transition:transform 0.6s cubic-bezier(.77,0,.18,1);
+}
+
+.profile-card.animate .profile-img img{
+    transform:scale(1.05) rotate(3deg);
+}
+
+/* Text blur transition */
+.text-animate{
+    transition:all 0.4s ease;
+}
+
+.blur-out{
+    opacity:0;
+    filter:blur(6px);
+    transform:translateY(10px);
+}
+
+.blur-in{
+    opacity:1;
+    filter:blur(0px);
+    transform:translateY(0);
+}
+
+
+/* RIGHT SIDE
+.name-list{
+    width:50%;
+} */
+
+.name-list h1{
+    font-size:40px;
+    margin-bottom:30px;
+}
+
+.team-name{
+    font-size:35px;
+    color:#999;
+    margin:15px 0;
+    cursor:pointer;
+    position:relative;
+    display:block;        
+    transition:0.3s;
+}
+
+/* Underline container only under text */
+.team-name span{
+    position:relative;
+    display:inline-block;
+}
+
+/* Animated underline */
+.team-name span::after{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:-5px;
+    width:0%;
+    height:3px;
+    background:#00ff99;
+    transition:width 0.4s ease;
+}
+
+/* Hover */
+.team-name:hover{
+    color:#00ff99;
+}
+
+.team-name:hover span::after{
+    width:100%;
+}
+
+/* Active */
+.team-name.active{
+    color:#00ff99;
+}
+
+.team-name.active span::after{
+    width:100%;
+}
+
+
+
+/* .team-name.active{
+    color:black;
+    font-weight:bold;
+} */
+
+.stats-container{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:30px;
+    margin:40px auto;
+    max-width:900px;
+}
+
+.stat-card{
+    background:rgba(20,20,20,0.9);
+    padding:30px;
+    border-radius:20px;
+    border:1px solid rgba(0,255,153,0.4);
+    box-shadow:0 0 15px rgba(0,255,153,0.1);
+    text-align:center;
+    transition:all 0.3s ease;
+}
+
+.stat-card:hover{
+    transform:translateY(-10px);
+    box-shadow:0 0 30px rgba(0,255,153,0.6);
+}
+
+.stat-card h3{
+    margin-bottom:10px;
+}
+
+.stat-card p{
+    font-size:42px;
+    font-weight:bold;
+    color:#00ff99;
+    text-shadow:0 0 15px #00ff99;
+    margin:10px 0 0 0;
+}
+
+.stat-sub{
+    font-size:12px;
+    color:#777;
+    letter-spacing:1px;
+}
+
+.chart-container{
+    width:400px;
+    margin:auto;
+    position:relative;
+}
+
+#noDataText{
+    margin-top:20px;
+    color:gray;
+}
+
+
+#typingTitle{
+    font-size:32px;
+    color:#00ff99;
+    letter-spacing:3px;
+    font-family:monospace;
+    /* white-space:nowrap; */
+    white-space:normal;
+    overflow:hidden;
+    border-right:3px solid #00ff99; /* cursor */
+    /* width:fit-content; */
+}
+
+.team-heading{
+    font-size:40px;
+    color:#00ff99;
+    text-align:center;        /* 👈 center fix */
+    margin-bottom:40px;
+    font-family:monospace;
+    letter-spacing:3px;
+    white-space:nowrap;
+    overflow:hidden;
+    border-right:3px solid #00ff99;  /* cursor */
+    display:inline-block;
+}
+
+/* Wrapper to center properly */
+.name-list{
+    width:50%;
+    text-align:center;   /* 👈 important */
+}
+
+/* Cursor blink */
+@keyframes blink {
+    0% { border-color:#00ff99; }
+    50% { border-color:transparent; }
+    100% { border-color:#00ff99; }
+}
+
+.team-heading{
+    animation: blink 0.8s infinite;
+}
+
+
+/* Blinking cursor
+@keyframes blink {
+    0% { border-color:#00ff99; }
+    50% { border-color:transparent; }
+    100% { border-color:#00ff99; }
+} */
+
+#typingTitle{
+    animation: blink 0.8s infinite;
+}
+
+
+/* Shake animation */
+@keyframes shakeBeat {
+    0% { transform: scale(1) rotate(0deg); }
+    20% { transform: scale(1.05) rotate(2deg); }
+    40% { transform: scale(1.05) rotate(-2deg); }
+    60% { transform: scale(1.05) rotate(2deg); }
+    80% { transform: scale(1.05) rotate(-2deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+
+/* Apply only to image on hover */
+.profile-img img {
+    transition: 0.3s ease;
+}
+
+.profile-img img:hover {
+    animation: shakeBeat 0.5s ease;
+}
+
+/* ............................. */
+body.main-bg{
+    background: url("assets/Anon.jpg") no-repeat center center fixed;
+    background-size: cover;
+}
+
+/* body.main-bg{
+    background: black;  
+} */
+
+/* Background layer
+body.main-bg::before{
+    content:"";
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:url("assets/cyberattack.jpg") no-repeat center center;
+    background-size:cover;
+    z-index:-2;
+    animation: rgbShift 0.3s infinite alternate;
+}
+
+/* Dark overlay */
+/* body.main-bg::after{
+    content:"";
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.85);
+    z-index:-1;
+} */ 
+
+
+/* Dark overlay */
+body.main-bg::before{
+    content:"";
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.85);
+    z-index:-1;
+}
+
+/* Email scanner textarea */
+#emailBody {
+  font-family: monospace;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+#emailScanner button {
+  margin: 5px;
+}
+
+/* Back button style */
+#emailScanner button:last-child {
+  background: transparent;
+  border: 1px solid #00ff99;
+  color: #00ff99;
+}
+#emailScanner button:last-child:hover {
+  background: #00ff99;
+  color: black;
+}
+
+/* Spear scanner textarea and inputs */
+#spearBody {
+  font-family: monospace;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+#spearScanner button {
+  margin: 5px;
+}
+
+/* Back button style (reuse from email scanner) */
+#spearScanner button:last-child {
+  background: transparent;
+  border: 1px solid #00ff99;
+  color: #00ff99;
+}
+#spearScanner button:last-child:hover {
+  background: #00ff99;
+  color: black;
+}
+
+/* Scrolling Effect */
+.fade-section{
+  opacity:0;
+  /* transform:translateY(40px); */
+  transform:translateY(60px) scale(0.98);
+  transition:opacity 0.8s ease, transform 0.8s ease;
+}
+
+.fade-section.show{
+  opacity:1;
+  /* transform:translateY(0); */
+  transform:translateY(0) scale(1);
+}
+
+.dashboard-title{
+    font-size:28px;
+    letter-spacing:4px;
+    margin-bottom:20px;
+    text-shadow:0 0 10px #00ff99;
+}
+
+.footer{
+    background:#111;
+    color:#00ff99;
+    text-align:right;
+    padding:20px;
+    font-size:14px;
+    border-top:1px solid rgba(0,255,153,0.3);
+    letter-spacing:1px;
+}
+
+.footer p{
+    margin:0;
+}
