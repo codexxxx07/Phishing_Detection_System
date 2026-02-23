@@ -43,14 +43,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const welcomeElement = document.getElementById("welcomeTyping");
 
-  const welcomeText = "WELCOME TO CYBER SHIELD";
+  const welcomeText = "WELCOME TO CYBER SHIELD...";
   let welcomeIndex = 0;
 
   function typeWelcome() {
     if (welcomeIndex < welcomeText.length) {
       welcomeElement.innerHTML += welcomeText.charAt(welcomeIndex);
       welcomeIndex++;
-      setTimeout(typeWelcome, 65); // speed control
+      setTimeout(typeWelcome, 80); // speed control
     }
   }
   typeWelcome();
