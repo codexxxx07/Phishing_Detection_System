@@ -662,6 +662,27 @@ body.main-bg::before{
   color: black;
 }
 
+/* Smishing scanner textarea and buttons */
+#smsBody {
+  font-family: monospace;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+#smishingScanner button {
+  margin: 5px;
+}
+
+#smishingScanner button:last-child {
+  background: transparent;
+  border: 1px solid #00ff99;
+  color: #00ff99;
+}
+#smishingScanner button:last-child:hover {
+  background: #00ff99;
+  color: black;
+}
+
 /* Scrolling Effect */
 .fade-section{
   opacity:0;

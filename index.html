@@ -119,6 +119,23 @@
        <h3 id="whaleResult"></h3>
       </section>
 
+    <!-- SMISHING SCANNER (hidden by default) -->
+    <section id="smishingScanner" style="display: none;">
+      <h2>📱 Smishing Scanner</h2>
+      <input type="text" id="smsSender" placeholder="Sender (phone number or name)" />
+      <input type="tel" id="smsRecipient" placeholder="Your phone number" />
+      <textarea id="smsBody" placeholder="SMS message content..." rows="4" style="width:60%; background:black; border:1px solid #00ff99; color:#00ff99; padding:10px;"></textarea>
+      <br/>
+      <button onclick="scanSmishing()">Scan for Smishing</button>
+      <button onclick="showUrlScanner()">← Back to URL Scanner</button>
+
+    <div class="progress">
+     <div id="smsProgressBar"></div>
+    </div>
+
+      <h3 id="smsResult"></h3>
+    </section>
+
       <!-- PHISHING TYPES -->
       <section id="phishing" class="fade-section">
         <h2>Types of Phishing</h2>
