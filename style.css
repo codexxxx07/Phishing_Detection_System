@@ -23,13 +23,25 @@ nav{
 }
 
 nav a{
+    position: relative;
     color:#00ff99;
     margin:0 10px;
     text-decoration:none;
 }
 
-nav a:hover{
-    border-bottom:2px solid #00ff99;
+nav a::after{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:-5px;
+    width:0%;
+    height:2px;
+    background:#00ff99;
+    transition:width 0.3s ease;
+}
+
+nav a:hover::after{
+    width:100%;
 }
 
 section{
