@@ -641,6 +641,27 @@ body.main-bg::before{
   color: black;
 }
 
+/* Whaling scanner inputs and textarea */
+#whaleBody {
+  font-family: monospace;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+#whaleScanner button {
+  margin: 5px;
+}
+
+#whaleScanner button:last-child {
+  background: transparent;
+  border: 1px solid #00ff99;
+  color: #00ff99;
+}
+#whaleScanner button:last-child:hover {
+  background: #00ff99;
+  color: black;
+}
+
 /* Scrolling Effect */
 .fade-section{
   opacity:0;

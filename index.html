@@ -99,6 +99,26 @@
        <h3 id="spearResult"></h3>
       </section>
 
+      <!-- WHALING SCANNER (hidden by default) -->
+      <section id="whalingScanner" style="display: none;">
+        <h2>🐋 Whaling Scanner</h2>
+        <input type="email" id="whaleFrom" placeholder="From (e.g., ceo@company.com)" />
+        <input type="email" id="whaleTo" placeholder="To (target email)" />
+        <input type="text" id="whaleTargetName" placeholder="Target's Name (e.g., John Doe)" />
+        <input type="text" id="whaleTargetRole" placeholder="Target's Role (e.g., CEO, CFO)" />
+        <input type="text" id="whaleSubject" placeholder="Subject" />
+        <textarea id="whaleBody" placeholder="Email body content..." rows="5" style="width:60%; background:black; border:1px solid #00ff99; color:#00ff99; padding:10px;"></textarea>
+        <br/>
+        <button onclick="scanWhaling()">Scan for Whaling</button>
+        <button onclick="showUrlScanner()">← Back to URL Scanner</button>
+
+      <div class="progress">
+        <div id="whaleProgressBar"></div>
+      </div>
+
+       <h3 id="whaleResult"></h3>
+      </section>
+
       <!-- PHISHING TYPES -->
       <section id="phishing" class="fade-section">
         <h2>Types of Phishing</h2>

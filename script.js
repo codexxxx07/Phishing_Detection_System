@@ -792,6 +792,225 @@ function displaySpearResult(result) {
   resultEl.innerHTML = `${result.label} (Score: ${result.score})<br><small>${result.reasons.join(" • ")}</small>`;
 }
 
+// ================= WHALING CARD CLICK =================
+document.querySelectorAll('.card').forEach(card => {
+  if (card.textContent.trim() === 'Whaling') {
+    card.addEventListener('click', () => {
+      document.getElementById('scanner').style.display = 'none';
+      document.getElementById('emailScanner').style.display = 'none';
+      document.getElementById('spearScanner').style.display = 'none';
+      document.getElementById('whalingScanner').style.display = 'block';
+    });
+  }
+});
+
+// Extend showUrlScanner to also hide whaling scanner
+const originalShowUrlScanner1 = window.showUrlScanner;
+window.showUrlScanner = function() {
+  document.getElementById('emailScanner').style.display = 'none';
+  document.getElementById('spearScanner').style.display = 'none';
+  document.getElementById('whalingScanner').style.display = 'none';
+  document.getElementById('scanner').style.display = 'block';
+  document.getElementById('emailProgressBar').style.width = '0%';
+  document.getElementById('spearProgressBar').style.width = '0%';
+  document.getElementById('whaleProgressBar').style.width = '0%';
+  document.getElementById('emailResult').innerHTML = '';
+  document.getElementById('spearResult').innerHTML = '';
+  document.getElementById('whaleResult').innerHTML = '';
+};
+
+// ================= WHALING SCAN =================
+function scanWhaling() {
+  const from = document.getElementById('whaleFrom').value;
+  const to = document.getElementById('whaleTo').value;
+  const targetName = document.getElementById('whaleTargetName').value.trim().toLowerCase();
+  const targetRole = document.getElementById('whaleTargetRole').value.trim().toLowerCase();
+  const subject = document.getElementById('whaleSubject').value;
+  const body = document.getElementById('whaleBody').value;
+
+  const progress = document.getElementById('whaleProgressBar');
+  progress.style.width = '0%';
+  let width = 0;
+  const interval = setInterval(() => {
+    if (width >= 100) {
+      clearInterval(interval);
+      const result = analyzeWhalingContent(from, to, targetName, targetRole, subject, body);
+      displayWhalingResult(result);
+    } else {
+      width += 10;
+      progress.style.width = width + '%';
+    }
+  }, 100);
+}
+
+function analyzeWhalingContent(from, to, targetName, targetRole, subject, body) {
+  let score = 0;
+  const reasons = [];
+
+  // 1. Parse sender
+  const fromParsed = normalizeEmail(from);
+  if (!fromParsed) {
+    score += 15;
+    reasons.push('Invalid or missing From address');
+  }
+
+  // 2. Sender domain checks (same as before)
+  if (fromParsed) {
+    const fromBase = getBaseDomain(fromParsed.domain);
+    for (const brand of HIGH_VALUE_BRANDS) {
+      const brandBase = getBaseDomain(brand);
+      const sim = tokenSimilarity(fromBase, brandBase);
+      if (sim > 0.55 && fromBase !== brandBase) {
+        score += 20;
+        reasons.push(`From domain looks like ${brandBase} but is actually ${fromBase}`);
+        break;
+      }
+    }
+
+    const tld = fromParsed.domain.split('.').pop();
+    const suspiciousTLDs = ['zip', 'mov', 'top', 'xyz', 'click', 'country', 'kim', 'gq', 'tk', 'cf'];
+    if (suspiciousTLDs.includes(tld)) {
+      score += 8;
+      reasons.push(`From domain uses risky TLD .${tld}`);
+    }
+  }
+
+  // 3. Check if sender is impersonating an internal executive
+  //    We don't have an org domain list, but we can check if sender domain matches recipient domain
+  const toParsed = normalizeEmail(to);
+  if (fromParsed && toParsed) {
+    const fromBase = getBaseDomain(fromParsed.domain);
+    const toBase = getBaseDomain(toParsed.domain);
+    if (fromBase !== toBase) {
+      score += 15;
+      reasons.push(`Sender domain (${fromBase}) differs from recipient domain (${toBase}) – external sender`);
+    } else {
+      // Internal, but might be impersonating a C-level
+      // We'll add points if the display name or local part suggests executive
+    }
+  }
+
+  // 4. Executive role in subject/body
+  const fullText = (subject + ' ' + body).toLowerCase();
+  const executiveRoles = ['ceo', 'cfo', 'cto', 'coo', 'president', 'director', 'executive', 'vp', 'vice president'];
+  const roleHits = executiveRoles.filter(r => fullText.includes(r)).length;
+  if (roleHits > 0) {
+    score += 10;
+    reasons.push(`Executive role mentioned (${roleHits} times) – could be targeting authority`);
+  }
+
+  // 5. Check if target's name is in the email (personalization)
+  if (targetName && fullText.includes(targetName)) {
+    // Personalized – could be legit or carefully crafted
+    reasons.push('Email contains target’s name');
+  } else if (targetName) {
+    score += 8;
+    reasons.push('Email does not contain target’s name (lack of personalization for executive)');
+  }
+
+  // 6. Check if target's role is in the email
+  if (targetRole && fullText.includes(targetRole)) {
+    reasons.push('Email mentions target’s role');
+  } else if (targetRole) {
+    score += 6;
+    reasons.push('Email does not mention target’s role (missed opportunity for personalization)');
+  }
+
+  // 7. Urgency / authority language (whaling often uses urgent directives)
+  const urgentPatterns = [
+    /\burgent\b/i, /\bimmediately\b/i, /\baction required\b/i,
+    /\bcomply\b/i, /\bmandatory\b/i, /\bdeadline\b/i, /\bconfidential\b/i
+  ];
+  const urgentHits = urgentPatterns.filter(r => r.test(subject) || r.test(body)).length;
+  if (urgentHits >= 2) {
+    score += 12;
+    reasons.push(`Urgency/authority language (${urgentHits} indicators)`);
+  } else if (urgentHits === 1) {
+    score += 6;
+    reasons.push('Some urgency/authority language');
+  }
+
+  // 8. Credential keywords (often present in whaling)
+  const credPatterns = [
+    /\bpassword\b/i, /\bwire\b/i, /\btransfer\b/i, /\bpayment\b/i,
+    /\bconfidential\b/i, /\bsecret\b/i, /\bproprietary\b/i
+  ];
+  const credHits = credPatterns.filter(r => r.test(subject) || r.test(body)).length;
+  if (credHits >= 2) {
+    score += 15;
+    reasons.push(`Sensitive keywords (${credHits} indicators)`);
+  } else if (credHits === 1) {
+    score += 8;
+    reasons.push('Possible sensitive content');
+  }
+
+  // 9. Attachments (though we don't have file input, we can check for attachment mentions)
+  if (/\battach\b/i.test(fullText) || /\battachment\b/i.test(fullText)) {
+    score += 5;
+    reasons.push('Email mentions an attachment (common in whaling)');
+  }
+
+  // 10. URL checks (same as before)
+  const urlRegex = /\bhttps?:\/\/[^\s<>"')]+/gi;
+  const urls = body.match(urlRegex) || [];
+  if (urls.length >= 3) score += 5;
+
+  for (const u of urls) {
+    try {
+      const url = new URL(u);
+      const host = url.hostname.toLowerCase();
+      const base = getBaseDomain(host);
+      if (fromParsed && base && getBaseDomain(fromParsed.domain) !== base) {
+        score += 6;
+        reasons.push(`Link domain (${base}) differs from sender domain`);
+        break;
+      }
+    } catch (e) {}
+  }
+
+  // Normalize score (0-100)
+  score = Math.min(100, Math.max(0, score));
+
+  // Label thresholds (higher due to executive focus)
+  let label, safeInc, riskInc;
+  if (score >= 65) {
+    label = '⚠ HIGH RISK – Whaling Indicators Strong';
+    riskInc = 1;
+    safeInc = 0;
+  } else if (score >= 35) {
+    label = '⚠ SUSPICIOUS – Potential Executive Targeting';
+    riskInc = 1;
+    safeInc = 0;
+  } else {
+    label = '✅ SAFE – Low Risk of Whaling';
+    safeInc = 1;
+    riskInc = 0;
+  }
+
+  return { score, reasons, label, safeInc, riskInc };
+}
+
+function displayWhalingResult(result) {
+  // Update dashboard counters
+  totalScans += 1;
+  safeCount += result.safeInc;
+  riskCount += result.riskInc;
+
+  document.getElementById('totalScans').innerText = totalScans;
+  document.getElementById('safeCountDisplay').innerText = safeCount;
+  document.getElementById('riskCountDisplay').innerText = riskCount;
+
+  if (totalScans > 0) {
+    document.getElementById('noDataText').style.display = 'none';
+  }
+
+  updateChart();
+
+  // Show result message
+  const resultEl = document.getElementById('whaleResult');
+  resultEl.innerHTML = `${result.label} (Score: ${result.score})<br><small>${result.reasons.join(' • ')}</small>`;
+}
+
 /*----------------------Scrolling Effect----------------------*/
 
 const fadeSections = document.querySelectorAll(".fade-section");
