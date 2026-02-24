@@ -9,7 +9,6 @@ body{
     flex-direction:column;
 }
 
-
 #mainContent{
     display:none;
     flex:1;
