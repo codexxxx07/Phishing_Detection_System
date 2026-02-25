@@ -395,16 +395,20 @@ button{
     display:inline-block;
 }
 
-/* Animated underline */
 .team-name span::after{
     content:"";
     position:absolute;
-    left:0;
+    left:50%;
     bottom:-5px;
     width:0%;
     height:3px;
     background:#00ff99;
-    transition:width 0.4s ease;
+    transform:translateX(-50%);
+    transition:width 0.5s ease;
+}
+
+.team-name:hover span::after{
+    width:100%;
 }
 
 /* Hover */
