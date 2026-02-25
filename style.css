@@ -497,6 +497,18 @@ button{
     /* width:fit-content; */
 }
 
+#homeTyping{
+    font-size:15px;
+    color:#00ff99;
+    font-family:monospace;
+    letter-spacing:1px;
+    white-space:nowrap;
+    overflow:hidden;
+    border-right:3px solid #00ff99;
+    display:inline-block;
+    animation: blink 0.8s infinite;
+}
+
 .team-heading{
     font-size:40px;
     color:#00ff99;
