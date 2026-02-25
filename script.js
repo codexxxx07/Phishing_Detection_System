@@ -1357,20 +1357,23 @@ function displaySmishingResult(result) {
 
 /*----------------------Scrolling Effect----------------------*/
 
-const fadeSections = document.querySelectorAll(".fade-section");
+const sections = document.querySelectorAll(".fade-section");
 
-const observer = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("show");
-      }
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add("show");
+        } else {
+            entry.target.classList.remove("show"); // 👈 ye important hai
+        }
     });
-  },
-  {
-    threshold: 0.2,
-  },
-);
+}, {
+    threshold: 0.2
+});
+
+sections.forEach(section => {
+    observer.observe(section);
+});
 
 fadeSections.forEach((section) => {
   observer.observe(section);
