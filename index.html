@@ -154,6 +154,129 @@
          <h3 id="vishResult"></h3>
       </section>
 
+      <!-- CLONE PHISHING SCANNER (hidden by default) -->
+      <section id="cloneScanner" style="display: none;">
+        <h2>🔄 Clone Phishing Scanner</h2>
+        <input type="email" id="cloneFrom" placeholder="From (e.g., colleague@company.com)" />
+        <input type="text" id="cloneSubject" placeholder="Subject" />
+        <textarea id="cloneBody" placeholder="Email body content..." rows="5" style="width:60%; background:black; border:1px solid #00ff99; color:#00ff99; padding:10px;"></textarea>
+        <br/>
+        <button onclick="scanClone()">Scan for Clone Phishing</button>
+        <button onclick="showUrlScanner()">← Back to URL Scanner</button>
+
+      <div class="progress">
+       <div id="cloneProgressBar"></div>
+      </div>
+
+       <h3 id="cloneResult"></h3>
+      </section>
+
+      <!-- QUISHING SCANNER (hidden by default) -->
+      <section id="quishingScanner" style="display: none;">
+        <h2>📱 Quishing Scanner</h2>
+        <input type="email" id="quishFrom" placeholder="From (e.g., support@company.com)" />
+        <input type="text" id="quishSubject" placeholder="Subject" />
+        <textarea id="quishBody" placeholder="Email/message content... (look for QR code mentions)" rows="5" style="width:60%; background:black; border:1px solid #00ff99; color:#00ff99; padding:10px;"></textarea>
+        <br/>
+        <button onclick="scanQuishing()">Scan for Quishing</button>
+        <button onclick="showUrlScanner()">← Back to URL Scanner</button>
+
+      <div class="progress">
+        <div id="quishProgressBar"></div>
+      </div>
+
+       <h3 id="quishResult"></h3>
+      </section>
+
+      <!-- ANGLER PHISHING SCANNER (hidden by default) -->
+      <section id="anglerScanner" style="display: none;">
+        <h2>🎣 Angler Phishing Scanner</h2>
+        <select id="anglerPlatform" style="width:60%; background:black; border:1px solid #00ff99; color:#00ff99; padding:10px; margin-bottom:10px;">
+          <option value="">Select Social Media Platform</option>
+          <option value="twitter">Twitter/X</option>
+          <option value="facebook">Facebook</option>
+          <option value="instagram">Instagram</option>
+          <option value="linkedin">LinkedIn</option>
+          <option value="tiktok">TikTok</option>
+          <option value="other">Other</option>
+        </select>
+        <input type="text" id="anglerHandle" placeholder="Attacker's Handle/Account (e.g., @support_tech)" />
+        <input type="text" id="anglerClaim" placeholder="Claiming to Be (e.g., Amazon Support)" />
+        <textarea id="anglerMessage" placeholder="Message content..." rows="5" style="width:60%; background:black; border:1px solid #00ff99; color:#00ff99; padding:10px;"></textarea>
+        <br/>
+        <button onclick="scanAngler()">Scan for Angler Phishing</button>
+        <button onclick="showUrlScanner()">← Back to URL Scanner</button>
+
+      <div class="progress">
+        <div id="anglerProgressBar"></div>
+      </div>
+
+        <h3 id="anglerResult"></h3>
+      </section>
+
+      <!-- HTTPS PHISHING SCANNER (hidden by default) -->
+      <section id="httpsScanner" style="display: none;">
+        <h2>🔒 HTTPS Phishing Scanner</h2>
+        <input type="url" id="httpsUrl" placeholder="Enter suspicious URL (e.g., https://secure-paypal.com)" />
+        <textarea id="httpsContext" placeholder="Optional: context (email subject/body)..." rows="3" style="width:60%; background:black; border:1px solid #00ff99; color:#00ff99; padding:10px;"></textarea>
+        <br/>
+        <button onclick="scanHttps()">Scan URL</button>
+        <button onclick="showUrlScanner()">← Back to URL Scanner</button>
+
+      <div class="progress">
+        <div id="httpsProgressBar"></div>
+      </div>
+
+        <h3 id="httpsResult"></h3>
+      </section>
+
+      <!-- EVIL TWIN SCANNER (hidden by default) -->
+      <section id="evilTwinScanner" style="display: none;">
+      <h2>📡 Evil Twin Scanner</h2>
+      <input type="text" id="evilSsid" placeholder="Wi‑Fi SSID (network name)" />
+      
+      <select id="evilSecurity" style="width:60%; background:black; border:1px solid #00ff99; color:#00ff99; padding:10px; margin-bottom:10px;">
+        <option value="">Select Security Type</option>
+        <option value="open">Open (No password)</option>
+        <option value="wep">WEP</option>
+        <option value="wpa">WPA</option>
+        <option value="wpa2">WPA2</option>
+        <option value="wpa3">WPA3</option>
+        <option value="unknown">Unknown / Other</option>
+      </select>
+
+      <select id="evilSignal" style="width:60%; background:black; border:1px solid #00ff99; color:#00ff99; padding:10px; margin-bottom:10px;">
+        <option value="">Signal Strength</option>
+        <option value="weak">Weak</option>
+        <option value="medium">Medium</option>
+        <option value="strong">Strong</option>
+      </select>
+
+      <select id="evilDuplicate" style="width:60%; background:black; border:1px solid #00ff99; color:#00ff99; padding:10px; margin-bottom:10px;">
+        <option value="">Have you seen other networks with the same SSID?</option>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+        <option value="unsure">Not sure</option>
+      </select>
+
+      <select id="evilPublicPlace" style="width:60%; background:black; border:1px solid #00ff99; color:#00ff99; padding:10px; margin-bottom:10px;">
+        <option value="">Are you in a public place? (café, airport, hotel…)</option>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <textarea id="evilDetails" placeholder="Any additional details (e.g., captive portal behavior, exact name duplicates)..." rows="3" style="width:60%; background:black; border:1px solid #00ff99; color:#00ff99; padding:10px;"></textarea>
+      <br/>
+      <button onclick="scanEvilTwin()">Scan for Evil Twin</button>
+      <button onclick="showUrlScanner()">← Back to URL Scanner</button>
+
+    <div class="progress">
+      <div id="evilProgressBar"></div>
+    </div>
+
+      <h3 id="evilResult"></h3>
+    </section>
+
       <!-- PHISHING TYPES -->
       <section id="phishing" class="fade-section">
         <h2>Types of Phishing</h2>
