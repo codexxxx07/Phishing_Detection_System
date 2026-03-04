@@ -44,8 +44,7 @@
       <!-- HOME -->
       <section id="home" class="fade-section">
         <h1>AI-Powered Phishing Detection Platform</h1>
-        <!-- <p>Protecting College Students in Real-Time</p> -->
-        <p id="homeTyping"></p>
+        <p>Protecting College Students in Real-Time</p>
       </section>
 
       <!-- SCANNER -->
@@ -136,6 +135,24 @@
 
       <h3 id="smsResult"></h3>
     </section>
+
+    <!-- VISHING SCANNER (hidden by default) -->
+      <section id="vishingScanner" style="display: none;">
+        <h2>📞 Vishing Scanner</h2>
+        <input type="text" id="vishCallerId" placeholder="Caller ID / Phone Number" />
+        <input type="text" id="vishClaimedIdentity" placeholder="Caller Claims to Be (e.g., IRS, Bank)" />
+        <input type="text" id="vishCallPurpose" placeholder="Call Purpose (e.g., Account Suspended)" />
+        <textarea id="vishDetails" placeholder="Describe the call details..." rows="5" style="width:60%; background:black; border:1px solid #00ff99; color:#00ff99; padding:10px;"></textarea>
+        <br/>
+        <button onclick="scanVishing()">Scan for Vishing</button>
+        <button onclick="showUrlScanner()">← Back to URL Scanner</button>
+
+      <div class="progress">
+        <div id="vishProgressBar"></div>
+      </div>
+
+         <h3 id="vishResult"></h3>
+      </section>
 
       <!-- PHISHING TYPES -->
       <section id="phishing" class="fade-section">

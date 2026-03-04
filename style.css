@@ -9,6 +9,7 @@ body{
     flex-direction:column;
 }
 
+
 #mainContent{
     display:none;
     flex:1;
@@ -22,26 +23,13 @@ nav{
 }
 
 nav a{
-    position: relative;
     color:#00ff99;
     margin:0 10px;
     text-decoration:none;
 }
 
-nav a::after{
-    content:"";
-    position:absolute;
-    left:50%;
-    bottom:-5px;
-    width:0%;
-    height:2px;
-    background:#00ff99;
-    transform:translateX(-50%);
-    transition:width 0.3s ease;
-}
-
-nav a:hover::after{
-    width:100%;
+nav a:hover{
+    border-bottom:2px solid #00ff99;
 }
 
 section{
@@ -395,20 +383,16 @@ button{
     display:inline-block;
 }
 
+/* Animated underline */
 .team-name span::after{
     content:"";
     position:absolute;
-    left:50%;
+    left:0;
     bottom:-5px;
     width:0%;
     height:3px;
     background:#00ff99;
-    transform:translateX(-50%);
-    transition:width 0.5s ease;
-}
-
-.team-name:hover span::after{
-    width:100%;
+    transition:width 0.4s ease;
 }
 
 /* Hover */
@@ -499,18 +483,6 @@ button{
     overflow:hidden;
     border-right:3px solid #00ff99; /* cursor */
     /* width:fit-content; */
-}
-
-#homeTyping{
-    font-size:15px;
-    color:#00ff99;
-    font-family:monospace;
-    letter-spacing:1px;
-    white-space:nowrap;
-    overflow:hidden;
-    border-right:3px solid #00ff99;
-    display:inline-block;
-    animation: blink 0.8s infinite;
 }
 
 .team-heading{
@@ -707,6 +679,27 @@ body.main-bg::before{
   color: #00ff99;
 }
 #smishingScanner button:last-child:hover {
+  background: #00ff99;
+  color: black;
+}
+
+/* Vishing scanner textarea and buttons */
+#vishDetails {
+  font-family: monospace;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+#vishingScanner button {
+  margin: 5px;
+}
+
+#vishingScanner button:last-child {
+  background: transparent;
+  border: 1px solid #00ff99;
+  color: #00ff99;
+}
+#vishingScanner button:last-child:hover {
   background: #00ff99;
   color: black;
 }
