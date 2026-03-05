@@ -324,6 +324,30 @@ function startLoadingSimulation(idOrCb, callback) {
   }, 500);
 }
 
+// Reusable cyber progress animation for phishing modules
+function animateCyberProgress(barId, percentId, onComplete) {
+  const bar = document.getElementById(barId);
+  const percent = percentId ? document.getElementById(percentId) : null;
+  if (!bar) {
+    if (typeof onComplete === "function") onComplete();
+    return;
+  }
+  bar.style.width = "0%";
+  if (percent) percent.innerText = "0%";
+  let width = 0;
+  const interval = setInterval(() => {
+    if (width >= 100) {
+      clearInterval(interval);
+      if (percent) percent.innerText = "100%";
+      if (typeof onComplete === "function") setTimeout(onComplete, 100);
+    } else {
+      width += 14;
+      bar.style.width = width + "%";
+      if (percent) percent.innerText = Math.min(width, 100) + "%";
+    }
+  }, 500);
+}
+
 /* ================= CHART ================= */
 
 let chartCtx = document.getElementById("threatChart").getContext("2d");
@@ -534,8 +558,7 @@ function scanEmail() {
   const subject = document.getElementById("emailSubject").value;
   const body = document.getElementById("emailBody").value;
 
-  // Progress bar animation
-  startLoadingSimulation("emailLoadingText", function () {
+  animateCyberProgress("emailProgressBar", "emailProgressPercent", function () {
     const result = analyzeEmailContent(from, subject, body);
     displayEmailResult(result);
   });
@@ -754,9 +777,7 @@ function scanSpear() {
   const subject = document.getElementById("spearSubject").value;
   const body = document.getElementById("spearBody").value;
 
-  const progress = document.getElementById("spearProgressBar");
-  progress.style.width = "0%";
-  startLoadingSimulation("spearLoadingText", function () {
+  animateCyberProgress("spearProgressBar", "spearProgressPercent", function () {
     const result = analyzeSpearContent(from, to, recipientName, subject, body);
     displaySpearResult(result);
   });
@@ -1014,26 +1035,17 @@ function scanWhaling() {
   const subject = document.getElementById("whaleSubject").value;
   const body = document.getElementById("whaleBody").value;
 
-  const progress = document.getElementById("whaleProgressBar");
-  progress.style.width = "0%";
-  let width = 0;
-  const interval = setInterval(() => {
-    if (width >= 100) {
-      clearInterval(interval);
-      const result = analyzeWhalingContent(
-        from,
-        to,
-        targetName,
-        targetRole,
-        subject,
-        body,
-      );
-      displayWhalingResult(result);
-    } else {
-      width += 10;
-      progress.style.width = width + "%";
-    }
-  }, 100);
+  animateCyberProgress("whaleProgressBar", "whaleProgressPercent", function () {
+    const result = analyzeWhalingContent(
+      from,
+      to,
+      targetName,
+      targetRole,
+      subject,
+      body,
+    );
+    displayWhalingResult(result);
+  });
 }
 
 function analyzeWhalingContent(
@@ -1298,19 +1310,10 @@ function scanSmishing() {
   const recipient = document.getElementById("smsRecipient").value;
   const body = document.getElementById("smsBody").value;
 
-  const progress = document.getElementById("smsProgressBar");
-  progress.style.width = "0%";
-  let width = 0;
-  const interval = setInterval(() => {
-    if (width >= 100) {
-      clearInterval(interval);
-      const result = analyzeSmishingContent(sender, recipient, body);
-      displaySmishingResult(result);
-    } else {
-      width += 10;
-      progress.style.width = width + "%";
-    }
-  }, 100);
+  animateCyberProgress("smsProgressBar", "smsProgressPercent", function () {
+    const result = analyzeSmishingContent(sender, recipient, body);
+    displaySmishingResult(result);
+  });
 }
 
 function analyzeSmishingContent(sender, recipient, body) {
@@ -1570,19 +1573,10 @@ function scanVishing() {
   const callPurpose = document.getElementById('vishCallPurpose').value;
   const details = document.getElementById('vishDetails').value;
 
-  const progress = document.getElementById('vishProgressBar');
-  progress.style.width = '0%';
-  let width = 0;
-  const interval = setInterval(() => {
-    if (width >= 100) {
-      clearInterval(interval);
-      const result = analyzeVishingContent(callerId, claimedIdentity, callPurpose, details);
-      displayVishingResult(result);
-    } else {
-      width += 10;
-      progress.style.width = width + '%';
-    }
-  }, 100);
+  animateCyberProgress('vishProgressBar', 'vishProgressPercent', function () {
+    const result = analyzeVishingContent(callerId, claimedIdentity, callPurpose, details);
+    displayVishingResult(result);
+  });
 }
 
 function analyzeVishingContent(callerId, claimedIdentity, callPurpose, details) {
@@ -1775,19 +1769,10 @@ function scanClone() {
   const subject = document.getElementById('cloneSubject').value;
   const body = document.getElementById('cloneBody').value;
 
-  const progress = document.getElementById('cloneProgressBar');
-  progress.style.width = '0%';
-  let width = 0;
-  const interval = setInterval(() => {
-    if (width >= 100) {
-      clearInterval(interval);
-      const result = analyzeCloneContent(from, subject, body);
-      displayCloneResult(result);
-    } else {
-      width += 10;
-      progress.style.width = width + '%';
-    }
-  }, 100);
+  animateCyberProgress('cloneProgressBar', 'cloneProgressPercent', function () {
+    const result = analyzeCloneContent(from, subject, body);
+    displayCloneResult(result);
+  });
 }
 
 function analyzeCloneContent(from, subject, body) {
@@ -1978,19 +1963,10 @@ function scanQuishing() {
   const subject = document.getElementById('quishSubject').value;
   const body = document.getElementById('quishBody').value;
 
-  const progress = document.getElementById('quishProgressBar');
-  progress.style.width = '0%';
-  let width = 0;
-  const interval = setInterval(() => {
-    if (width >= 100) {
-      clearInterval(interval);
-      const result = analyzeQuishingContent(from, subject, body);
-      displayQuishingResult(result);
-    } else {
-      width += 10;
-      progress.style.width = width + '%';
-    }
-  }, 100);
+  animateCyberProgress('quishProgressBar', 'quishProgressPercent', function () {
+    const result = analyzeQuishingContent(from, subject, body);
+    displayQuishingResult(result);
+  });
 }
 
 function analyzeQuishingContent(from, subject, body) {
@@ -2204,19 +2180,10 @@ function scanAngler() {
   const claim = document.getElementById('anglerClaim').value;
   const message = document.getElementById('anglerMessage').value;
 
-  const progress = document.getElementById('anglerProgressBar');
-  progress.style.width = '0%';
-  let width = 0;
-  const interval = setInterval(() => {
-    if (width >= 100) {
-      clearInterval(interval);
-      const result = analyzeAnglerContent(platform, handle, claim, message);
-      displayAnglerResult(result);
-    } else {
-      width += 10;
-      progress.style.width = width + '%';
-    }
-  }, 100);
+  animateCyberProgress('anglerProgressBar', 'anglerProgressPercent', function () {
+    const result = analyzeAnglerContent(platform, handle, claim, message);
+    displayAnglerResult(result);
+  });
 }
 
 function analyzeAnglerContent(platform, handle, claim, message) {
@@ -2423,19 +2390,10 @@ function scanHttps() {
     return;
   }
 
-  const progress = document.getElementById('httpsProgressBar');
-  progress.style.width = '0%';
-  let width = 0;
-  const interval = setInterval(() => {
-    if (width >= 100) {
-      clearInterval(interval);
-      const result = analyzeHttpsContent(url, context);
-      displayHttpsResult(result);
-    } else {
-      width += 10;
-      progress.style.width = width + '%';
-    }
-  }, 100);
+  animateCyberProgress('httpsProgressBar', 'httpsProgressPercent', function () {
+    const result = analyzeHttpsContent(url, context);
+    displayHttpsResult(result);
+  });
 }
 
 function analyzeHttpsContent(url, context) {
@@ -2668,19 +2626,10 @@ function scanEvilTwin() {
     return;
   }
 
-  const progress = document.getElementById('evilProgressBar');
-  progress.style.width = '0%';
-  let width = 0;
-  const interval = setInterval(() => {
-    if (width >= 100) {
-      clearInterval(interval);
-      const result = analyzeEvilTwinContent(ssid, security, signal, duplicate, publicPlace, details);
-      displayEvilTwinResult(result);
-    } else {
-      width += 10;
-      progress.style.width = width + '%';
-    }
-  }, 100);
+  animateCyberProgress('evilProgressBar', 'evilProgressPercent', function () {
+    const result = analyzeEvilTwinContent(ssid, security, signal, duplicate, publicPlace, details);
+    displayEvilTwinResult(result);
+  });
 }
 
 function analyzeEvilTwinContent(ssid, security, signal, duplicate, publicPlace, details) {
