@@ -1,4 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
+  
+  document.getElementById("urlInput").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      scanThreat();
+    }
+  });
+
   /* ================= MATRIX RAIN ================= */
 
   const canvas = document.getElementById("matrixCanvas");
