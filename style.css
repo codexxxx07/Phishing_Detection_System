@@ -1089,6 +1089,144 @@ body.main-bg::before{
   color: black;
 }
 
+/* Vishing scanner textarea and buttons */
+#vishDetails {
+  font-family: monospace;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+#vishingScanner button {
+  margin: 5px;
+}
+
+#vishingScanner button:last-child {
+  background: transparent;
+  border: 1px solid #00ff99;
+  color: #00ff99;
+}
+#vishingScanner button:last-child:hover {
+  background: #00ff99;
+  color: black;
+}
+
+/* Clone scanner textarea and buttons */
+#cloneBody {
+  font-family: monospace;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+#cloneScanner button {
+  margin: 5px;
+}
+
+#cloneScanner button:last-child {
+  background: transparent;
+  border: 1px solid #00ff99;
+  color: #00ff99;
+}
+#cloneScanner button:last-child:hover {
+  background: #00ff99;
+  color: black;
+} 
+
+/* Quishing scanner textarea and buttons */
+#quishBody {
+  font-family: monospace;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+#quishingScanner button {
+  margin: 5px;
+}
+
+#quishingScanner button:last-child {
+  background: transparent;
+  border: 1px solid #00ff99;
+  color: #00ff99;
+}
+#quishingScanner button:last-child:hover {
+  background: #00ff99;
+  color: black;
+}
+
+/* Angler scanner dropdown and textarea */
+#anglerMessage {
+  font-family: monospace;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+#anglerScanner select,
+#anglerScanner input,
+#anglerScanner textarea {
+  margin-bottom: 10px;
+}
+
+#anglerScanner button {
+  margin: 5px;
+}
+
+#anglerScanner button:last-child {
+  background: transparent;
+  border: 1px solid #00ff99;
+  color: #00ff99;
+}
+#anglerScanner button:last-child:hover {
+  background: #00ff99;
+  color: black;
+}
+
+/* HTTPS scanner textarea and buttons */
+#httpsContext {
+  font-family: monospace;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+#httpsScanner button {
+  margin: 5px;
+}
+
+#httpsScanner button:last-child {
+  background: transparent;
+  border: 1px solid #00ff99;
+  color: #00ff99;
+}
+#httpsScanner button:last-child:hover {
+  background: #00ff99;
+  color: black;
+}
+
+/* Evil Twin scanner dropdowns and textarea */
+#evilDetails {
+  font-family: monospace;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+#evilTwinScanner select,
+#evilTwinScanner input,
+#evilTwinScanner textarea {
+  margin-bottom: 10px;
+}
+
+#evilTwinScanner button {
+  margin: 5px;
+}
+
+#evilTwinScanner button:last-child {
+  background: transparent;
+  border: 1px solid #00ff99;
+  color: #00ff99;
+}
+#evilTwinScanner button:last-child:hover {
+  background: #00ff99;
+  color: black;
+}
+
 /* Scrolling Effect */
 .fade-section{
   opacity:0;
