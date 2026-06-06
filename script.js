@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  
+
   document.getElementById("urlInput").addEventListener("keydown", function (e) {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -25,17 +25,12 @@ document.addEventListener("DOMContentLoaded", function () {
   function drawMatrix() {
     ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
     ctx.fillStyle = "#00ff99";
     ctx.font = fontSize + "px monospace";
-
     for (let i = 0; i < drops.length; i++) {
       let text = letters[Math.floor(Math.random() * letters.length)];
       ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975)
-        drops[i] = 0;
-
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
       drops[i]++;
     }
   }
@@ -50,7 +45,6 @@ document.addEventListener("DOMContentLoaded", function () {
   /* ================= WELCOME TYPING EFFECT ================= */
 
   const welcomeElement = document.getElementById("welcomeTyping");
-
   const welcomeText = "WELCOME TO CYBER SHIELD...";
   let welcomeIndex = 0;
 
@@ -58,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (welcomeIndex < welcomeText.length) {
       welcomeElement.innerHTML += welcomeText.charAt(welcomeIndex);
       welcomeIndex++;
-      setTimeout(typeWelcome, 80); // speed control
+      setTimeout(typeWelcome, 80);
     }
   }
   typeWelcome();
@@ -68,8 +62,6 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("enterBtn").addEventListener("click", function () {
     document.getElementById("matrixScreen").style.display = "none";
     document.getElementById("mainContent").style.display = "block";
-
-    // Add background class
     document.body.classList.add("main-bg");
     typeHomeText();
   });
@@ -77,10 +69,8 @@ document.addEventListener("DOMContentLoaded", function () {
   function typeHomeText() {
     const text = "Protecting College Students in Real-Time";
     const element = document.getElementById("homeTyping");
-
     let index = 0;
     element.innerHTML = "";
-
     function typing() {
       if (index < text.length) {
         element.innerHTML += text.charAt(index);
@@ -88,13 +78,10 @@ document.addEventListener("DOMContentLoaded", function () {
         setTimeout(typing, 60);
       }
     }
-
     typing();
   }
 
-  /* ================= TEAM SECTION (FIXED) ================= */
-
-  /* ================= TEAM SECTION (FINAL FIXED + SHAKE) ================= */
+  /* ================= TEAM SECTION ================= */
 
   const teamNames = document.querySelectorAll(".team-name");
   const card = document.querySelector(".profile-card");
@@ -118,23 +105,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const name = document.getElementById("memberName");
     const role = document.getElementById("memberRole");
     const desc = document.getElementById("memberDesc");
-
     const insta = document.getElementById("instaLink");
     const linkedin = document.getElementById("linkedinLink");
     const github = document.getElementById("githubLink");
 
-    // Blur out
     [image, name, role, desc].forEach((el) => el.classList.add("blur-out"));
-
     card.classList.add("animate");
 
     setTimeout(() => {
-      // Update content
       image.src = member.dataset.img;
       name.innerText = member.dataset.name;
       role.innerText = member.dataset.role;
       desc.innerText = member.dataset.desc;
-
       insta.href = member.dataset.insta || "#";
       linkedin.href = member.dataset.linkedin || "#";
       github.href = member.dataset.github || "#";
@@ -144,13 +126,10 @@ document.addEventListener("DOMContentLoaded", function () {
         el.classList.add("blur-in");
       });
 
-      // SHAKE RESET + REAPPLY
       profileImage.style.animation = "none";
       card.style.animation = "none";
-
-      void profileImage.offsetWidth; // force reflow
+      void profileImage.offsetWidth;
       void card.offsetWidth;
-
       profileImage.style.animation = "shakeBeat 0.5s ease";
       card.style.animation = "shakeBeat 0.5s ease";
     }, 250);
@@ -158,9 +137,54 @@ document.addEventListener("DOMContentLoaded", function () {
     teamNames.forEach((n) => n.classList.remove("active"));
     member.classList.add("active");
   }
+
+  /* ================= RESTORE LOCALSTORAGE ON LOAD ================= */
+  restoreFromStorage();
+
 });
 
-/* ================= SCROLL + LOOP TYPING EFFECT ================= */
+/* ================= TOAST NOTIFICATION ================= */
+
+function showToast(msg) {
+  let toast = document.getElementById("cyberToast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "cyberToast";
+    toast.style.cssText = `
+      position:fixed; bottom:28px; right:28px; z-index:9999;
+      background:#0f0f0f; border:1px solid #00ff99;
+      color:#00ff99; font-family:monospace; font-size:13px;
+      padding:10px 20px; border-radius:6px;
+      box-shadow:0 0 18px rgba(0,255,153,0.35);
+      opacity:0; transition:opacity 0.3s ease;
+      letter-spacing:1px;
+    `;
+    document.body.appendChild(toast);
+  }
+  toast.innerText = msg;
+  toast.style.opacity = "1";
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => { toast.style.opacity = "0"; }, 2200);
+}
+
+/* ================= INLINE ERROR HELPER ================= */
+
+function showInlineError(elementId, msg) {
+  let el = document.getElementById(elementId);
+  if (!el) return;
+  let err = el.parentElement.querySelector(".inline-scan-error");
+  if (!err) {
+    err = document.createElement("p");
+    err.className = "inline-scan-error";
+    err.style.cssText = "color:#ff3355; font-family:monospace; font-size:13px; margin:6px 0 0 0; letter-spacing:1px;";
+    el.parentElement.insertBefore(err, el.nextSibling);
+  }
+  err.innerText = msg;
+  clearTimeout(err._timer);
+  err._timer = setTimeout(() => { err.innerText = ""; }, 3500);
+}
+
+/* ================= SCROLL + LOOP TYPING ================= */
 
 const typingElement = document.getElementById("typingTitle");
 const teamSection = document.getElementById("teamSection");
@@ -177,38 +201,150 @@ let typingStarted = false;
 
 function typeLoop() {
   const currentText = texts[textIndex];
-
   if (!isDeleting) {
     typingElement.textContent = currentText.substring(0, charIndex + 1);
     charIndex++;
-
-    if (charIndex === currentText.length) {
-      setTimeout(() => (isDeleting = true), 1500);
-    }
+    if (charIndex === currentText.length) setTimeout(() => (isDeleting = true), 1500);
   } else {
     typingElement.textContent = currentText.substring(0, charIndex - 1);
     charIndex--;
-
     if (charIndex === 0) {
       isDeleting = false;
       textIndex = (textIndex + 1) % texts.length;
     }
   }
-
   let speed = isDeleting ? 50 : 120;
   setTimeout(typeLoop, speed);
 }
 
 window.addEventListener("scroll", function () {
   const sectionTop = teamSection.getBoundingClientRect().top;
-
   if (sectionTop < window.innerHeight - 100 && !typingStarted) {
     typingStarted = true;
     typeLoop();
   }
 });
 
-/* ================= SCAN SYSTEM ================= */
+/* ================= LOCALSTORAGE HELPERS ================= */
+
+const LS_KEY = "cyberShieldHistory";
+
+function loadHistory() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; }
+  catch (e) { return []; }
+}
+
+function saveHistory(history) {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(history)); } catch (e) {}
+}
+
+function pushScanRecord(input, scanType, riskScore, verdict, timestamp) {
+  const history = loadHistory();
+  history.unshift({ input, scanType, riskScore, verdict, timestamp });
+  // Keep at most 200 records
+  if (history.length > 200) history.length = 200;
+  saveHistory(history);
+}
+
+function restoreFromStorage() {
+  const history = loadHistory();
+  if (history.length === 0) return;
+
+  // Recalculate counters from stored history
+  let safe = 0, risk = 0, total = history.length;
+  let riskSum = 0;
+  history.forEach(r => {
+    if (r.verdict === "Safe") safe++;
+    else risk++;
+    riskSum += r.riskScore || 0;
+  });
+
+  totalScans = total;
+  safeCount = safe;
+  riskCount = risk;
+
+  // Average risk for the meter
+  const avgRisk = total > 0 ? Math.round(riskSum / total) : 0;
+  lastRiskLevelPercent = avgRisk;
+
+  // Update displays
+  animateCounter("totalScans", totalScans);
+  animateCounter("safeCountDisplay", safeCount);
+  animateCounter("riskCountDisplay", riskCount);
+
+  if (totalScans > 0) {
+    const noData = document.getElementById("noDataText");
+    if (noData) noData.style.display = "none";
+  }
+
+  // Determine last risk status from most recent scan
+  if (history.length > 0) {
+    const last = history[0];
+    lastRiskStatus = last.verdict;
+    lastRiskLevelPercent = last.riskScore || 0;
+  }
+
+  updateChart();
+  updateRiskUI();
+
+  // Populate logs table (latest first, already stored newest-first)
+  const tbody = document.getElementById("logsBody");
+  if (tbody) {
+    tbody.innerHTML = "";
+    history.forEach(r => {
+      const tr = document.createElement("tr");
+      const cls = r.verdict === "Safe" ? "safe" : r.verdict === "Suspicious" ? "suspicious" : "phishing";
+      tr.className = cls;
+      tr.innerHTML = `<td>${escapeHtml(r.input)}</td><td>${escapeHtml(r.verdict)}</td><td>${r.riskScore}%</td><td>${escapeHtml(r.timestamp)}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Ensure clear history button exists
+  ensureClearHistoryButton();
+}
+
+function ensureClearHistoryButton() {
+  if (document.getElementById("clearHistoryBtn")) return;
+  const logsPanel = document.querySelector(".logs-panel");
+  if (!logsPanel) return;
+
+  const btn = document.createElement("button");
+  btn.id = "clearHistoryBtn";
+  btn.innerText = "Clear History";
+  btn.style.cssText = `
+    background:transparent; border:1px solid #ff3355; color:#ff3355;
+    font-family:monospace; font-size:12px; letter-spacing:1px;
+    padding:7px 16px; cursor:pointer; margin-top:12px;
+    transition:background 0.2s ease, color 0.2s ease;
+  `;
+  btn.addEventListener("mouseenter", () => { btn.style.background="#ff3355"; btn.style.color="#000"; });
+  btn.addEventListener("mouseleave", () => { btn.style.background="transparent"; btn.style.color="#ff3355"; });
+  btn.addEventListener("click", clearAllHistory);
+  logsPanel.appendChild(btn);
+}
+
+function clearAllHistory() {
+  localStorage.removeItem(LS_KEY);
+  totalScans = 0; safeCount = 0; riskCount = 0;
+  lastRiskStatus = "Safe"; lastRiskLevelPercent = 0; currentMeterPercent = 0;
+
+  animateCounter("totalScans", 0);
+  animateCounter("safeCountDisplay", 0);
+  animateCounter("riskCountDisplay", 0);
+
+  const noData = document.getElementById("noDataText");
+  if (noData) noData.style.display = "block";
+
+  const tbody = document.getElementById("logsBody");
+  if (tbody) tbody.innerHTML = "";
+
+  updateChart();
+  updateRiskUI();
+  showToast("History cleared");
+}
+
+/* ================= SCAN STATE ================= */
 
 let safeCount = 0;
 let riskCount = 0;
@@ -217,68 +353,219 @@ let lastRiskStatus = "Safe";
 let lastRiskLevelPercent = 0;
 let currentMeterPercent = 0;
 
-function scanThreat() {
-  let input = document.getElementById("urlInput").value;
-  let progress = document.getElementById("progressBar");
+/* ================= MAIN URL SCANNER (enhanced rule-based) ================= */
 
+function scanThreat() {
+  const input = document.getElementById("urlInput").value.trim();
+
+  // Input validation
+  if (!input) {
+    showInlineError("urlInput", "⚠ Please enter a URL or message to scan.");
+    return;
+  }
+  if (input.length < 4) {
+    showInlineError("urlInput", "⚠ Input too short to analyze.");
+    return;
+  }
+
+  const progress = document.getElementById("progressBar");
   progress.style.width = "0%";
   const percentEl = document.getElementById("progressPercent");
   if (percentEl) percentEl.innerText = "0%";
 
   const analyzingText = document.getElementById("analyzingText");
   if (analyzingText) analyzingText.style.display = "block";
+
   startLoadingSimulation(function () {
-    analyze(input);
+    const result = analyzeUrl(input);
+    displayUrlResult(input, result);
   });
 }
 
-function analyze(input) {
-  totalScans++;
+/* Rule-based URL analysis engine */
+function analyzeUrl(input) {
+  let score = 0;
+  const triggered = [];
 
-  let suspiciousWords = ["login", "verify", "update", "secure", "account"];
-  let risk = false;
+  const raw = input.trim();
+  let hostname = "";
+  let pathname = "";
+  let protocol = "";
 
-  if (input.includes("@") || input.length > 50) {
-    risk = true;
+  try {
+    // Normalise – add scheme if missing so URL constructor works
+    const toparse = /^https?:\/\//i.test(raw) ? raw : "http://" + raw;
+    const u = new URL(toparse);
+    hostname = u.hostname.toLowerCase();
+    pathname = u.pathname.toLowerCase();
+    protocol = u.protocol;
+  } catch (e) {
+    hostname = raw.replace(/^https?:\/\//i, "").split("/")[0].toLowerCase();
+    protocol = raw.startsWith("https") ? "https:" : "http:";
   }
 
-  suspiciousWords.forEach((word) => {
-    if (input.toLowerCase().includes(word)) {
-      risk = true;
-    }
-  });
+  // 1. IP address instead of domain
+  if (/^(\d{1,3}\.){3}\d{1,3}$/.test(hostname)) {
+    score += 20;
+    triggered.push("IP address used instead of domain");
+  }
 
-  if (risk) {
-    riskCount++;
-    document.getElementById("result").innerHTML =
-      "⚠ HIGH RISK PHISHING DETECTED";
-    lastRiskStatus = "Phishing";
-    lastRiskLevelPercent = mapStatusToPercent("Phishing");
-    addLogEntry(input || "-", "Phishing", lastRiskLevelPercent);
+  // 2. URL length > 75
+  if (raw.length > 75) {
+    score += 10;
+    triggered.push(`Long URL (${raw.length} chars)`);
+  }
+
+  // 3. URL shorteners
+  const shorteners = ["bit.ly","tinyurl.com","t.co","goo.gl","rebrand.ly","ow.ly","is.gd","buff.ly","cutt.ly","shorturl.at","tiny.cc","rb.gy","clck.ru","bl.ink","shorte.st"];
+  if (shorteners.some(s => hostname.includes(s))) {
+    score += 15;
+    triggered.push("URL shortener detected");
+  }
+
+  // 4. @ symbol
+  if (raw.includes("@")) {
+    score += 15;
+    triggered.push('@ symbol in URL (hides real destination)');
+  }
+
+  // 5. Double-slash redirect
+  if (/\/\/[^/]/.test(pathname)) {
+    score += 10;
+    triggered.push("Double-slash redirect in path");
+  }
+
+  // 6. Hyphen prefix/suffix in domain
+  if (/(^-|-$)/.test(hostname.split(".")[0])) {
+    score += 8;
+    triggered.push("Hyphen at start/end of domain");
+  }
+
+  // 7. Subdomain count > 3
+  const subdomainCount = hostname.split(".").length - 2;
+  if (subdomainCount > 3) {
+    score += 12;
+    triggered.push(`Excessive subdomains (${subdomainCount})`);
+  }
+
+  // 8. Suspicious TLDs
+  const suspTlds = [".xyz",".tk",".ml",".ga",".cf",".gq",".pw",".top",".click",".zip",".mov",".country",".kim"];
+  const dotTld = "." + hostname.split(".").pop();
+  if (suspTlds.includes(dotTld)) {
+    score += 15;
+    triggered.push(`Suspicious TLD (${dotTld})`);
+  }
+
+  // 9. Phishing keywords in URL
+  const phishKeywords = ["secure","account","update","login","verify","bank","paypal","confirm","password","signin","credential","reset","auth","webscr"];
+  const foundKeywords = phishKeywords.filter(k => raw.toLowerCase().includes(k));
+  if (foundKeywords.length >= 3) {
+    score += 20;
+    triggered.push(`Multiple phishing keywords: ${foundKeywords.slice(0,4).join(", ")}`);
+  } else if (foundKeywords.length >= 1) {
+    score += 8;
+    triggered.push(`Phishing keyword(s): ${foundKeywords.join(", ")}`);
+  }
+
+  // 10. HTTP instead of HTTPS
+  if (protocol === "http:") {
+    score += 10;
+    triggered.push("No HTTPS (unencrypted connection)");
+  }
+
+  // 11. Excessive numbers in domain
+  const domainPart = hostname.split(".")[0] || "";
+  const digitRatio = (domainPart.match(/\d/g) || []).length / (domainPart.length || 1);
+  if (digitRatio > 0.4 && domainPart.length > 3) {
+    score += 10;
+    triggered.push("Excessive numbers in domain name");
+  }
+
+  // 12. Hex/percent encoding
+  if (/%[0-9a-fA-F]{2}/.test(raw)) {
+    score += 10;
+    triggered.push("Hex encoding (%XX) in URL");
+  }
+
+  // 13. Domain age indicators (newly registered patterns)
+  const newDomainPats = [/\d{4,}/, /[a-z]{1,3}\d{4,}/, /xn--/];
+  if (newDomainPats.some(p => p.test(domainPart)) && domainPart.length < 8) {
+    score += 8;
+    triggered.push("Domain appears newly registered or auto-generated");
+  }
+
+  // 14. Mismatch: HTTPS keyword in non-HTTPS URL
+  if (protocol !== "https:" && foundKeywords.includes("secure")) {
+    score += 5;
+    triggered.push("Claims 'secure' but does not use HTTPS");
+  }
+
+  score = Math.min(100, Math.max(0, score));
+
+  let verdict, statusKey;
+  if (score >= 65) {
+    verdict = "DANGEROUS";
+    statusKey = "Phishing";
+  } else if (score >= 35) {
+    verdict = "SUSPICIOUS";
+    statusKey = "Suspicious";
   } else {
-    safeCount++;
-    document.getElementById("result").innerHTML = "✅ SAFE";
-    lastRiskStatus = "Safe";
-    lastRiskLevelPercent = mapStatusToPercent("Safe");
-    addLogEntry(input || "-", "Safe", lastRiskLevelPercent);
+    verdict = "SAFE";
+    statusKey = "Safe";
   }
 
-  // document.getElementById("totalScans").innerText = totalScans;
+  return { score, triggered, verdict, statusKey };
+}
+
+function displayUrlResult(input, result) {
+  totalScans++;
+  if (result.statusKey === "Safe") safeCount++;
+  else riskCount++;
+
+  lastRiskStatus = result.statusKey;
+  lastRiskLevelPercent = mapStatusToPercent(result.statusKey, result.score);
+
   animateCounter("totalScans", totalScans);
   animateCounter("safeCountDisplay", safeCount);
   animateCounter("riskCountDisplay", riskCount);
 
-  if (totalScans > 0) {
-    document.getElementById("noDataText").style.display = "none";
-  }
+  const noData = document.getElementById("noDataText");
+  if (noData) noData.style.display = "none";
 
   updateChart();
   updateRiskUI();
+
   const analyzingText = document.getElementById("analyzingText");
   if (analyzingText) analyzingText.style.display = "none";
+
+  // Build result HTML
+  let icon = result.verdict === "DANGEROUS" ? "🚨" : result.verdict === "SUSPICIOUS" ? "⚠" : "✅";
+  let color = result.verdict === "DANGEROUS" ? "#ff3355" : result.verdict === "SUSPICIOUS" ? "#ffd166" : "#00ff99";
+  let breakdownHtml = "";
+  if (result.triggered.length > 0) {
+    breakdownHtml = `<br><small style="color:#9aa8a1;">${result.triggered.map(t => "• " + t).join(" &nbsp; ")}</small>`;
+  } else {
+    breakdownHtml = `<br><small style="color:#9aa8a1;">• No suspicious patterns detected</small>`;
+  }
+
+  document.getElementById("result").innerHTML =
+    `<span style="color:${color}">${icon} ${result.verdict} — Risk Score: ${result.score}/100</span>${breakdownHtml}`;
+
+  // Save to localStorage
+  const ts = new Date().toLocaleString();
+  pushScanRecord(input, "URL", lastRiskLevelPercent, result.statusKey, ts);
+  addLogEntry(input, result.statusKey, lastRiskLevelPercent);
+
+  // Auto-scroll to result
+  setTimeout(() => {
+    document.getElementById("result").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, 300);
+
+  ensureClearHistoryButton();
 }
 
-// loading bar
+/* ================= PROGRESS BAR with phased steps ================= */
+
 function startLoadingSimulation(idOrCb, callback) {
   const cb = typeof idOrCb === "function" ? idOrCb : callback;
   const progressBar = document.getElementById("progressBar");
@@ -287,52 +574,58 @@ function startLoadingSimulation(idOrCb, callback) {
   const meter = document.getElementById("riskMeter");
   const analyzingText = document.getElementById("analyzingText");
   const panel = document.getElementById("analysisPanel");
+
   if (meter) meter.classList.add("pulsing");
   if (analyzingText) analyzingText.style.display = "block";
   if (panel) panel.classList.add("scanning");
 
-  const steps = [
-    "🔐 Logging into secure node...",
-    "🌐 Establishing encrypted tunnel...",
-    "🛡 Checking phishing signatures...",
-    "🧠 Running AI threat engine...",
-    "🔄 Rechecking anomalies...",
-    "⚡ Almost done...",
-    "✅ Scan completed.",
+  // 5 analysis phases mapped to % checkpoints
+  const phases = [
+    { at: 20,  label: "🔍 Checking URL structure..." },
+    { at: 45,  label: "🌐 Analyzing domain reputation..." },
+    { at: 70,  label: "🛡 Scanning for phishing patterns..." },
+    { at: 90,  label: "🧠 Running threat algorithms..." },
+    { at: 100, label: "✅ Finalizing report..." },
   ];
 
   let width = 0;
-  let index = 0;
-
   progressBar.style.width = "0%";
-  progressText.innerText = "";
+  if (progressText) progressText.innerText = phases[0].label;
   if (progressPercent) progressPercent.innerText = "0%";
+
+  // Total duration ~2700ms across 100 steps → ~27ms per tick
+  const totalDuration = 2700;
+  const tickInterval = totalDuration / 100;
+  let phaseIndex = 0;
 
   const interval = setInterval(() => {
     if (width >= 100) {
       clearInterval(interval);
-      progressText.innerText = "Scan completed ✔";
+      progressBar.style.width = "100%";
       if (progressPercent) progressPercent.innerText = "100%";
+      if (progressText) progressText.innerText = "✅ Scan completed.";
       setTimeout(() => {
         if (meter) meter.classList.remove("pulsing");
         if (analyzingText) analyzingText.style.display = "none";
         if (panel) panel.classList.remove("scanning");
         if (typeof cb === "function") cb();
-      }, 700);
+      }, 500);
     } else {
-      width += 14;
+      width = Math.min(100, width + 1);
       progressBar.style.width = width + "%";
-      if (progressPercent) progressPercent.innerText = Math.min(width, 100) + "%";
+      if (progressPercent) progressPercent.innerText = width + "%";
 
-      if (index < steps.length) {
-        progressText.innerText = steps[index];
-        index++;
+      // Advance phase label at thresholds
+      if (phaseIndex < phases.length && width >= phases[phaseIndex].at) {
+        if (progressText) progressText.innerText = phases[phaseIndex].label;
+        phaseIndex++;
       }
     }
-  }, 500);
+  }, tickInterval);
 }
 
-// Reusable cyber progress animation for phishing modules
+/* ================= REUSABLE CYBER PROGRESS (sub-scanners) ================= */
+
 function animateCyberProgress(barId, percentId, onComplete) {
   const bar = document.getElementById(barId);
   const percent = percentId ? document.getElementById(percentId) : null;
@@ -342,51 +635,92 @@ function animateCyberProgress(barId, percentId, onComplete) {
   }
   bar.style.width = "0%";
   if (percent) percent.innerText = "0%";
+
+  const phases = [
+    { at: 20,  label: "🔍 Checking structure..." },
+    { at: 45,  label: "🌐 Analyzing patterns..." },
+    { at: 70,  label: "🛡 Scanning indicators..." },
+    { at: 90,  label: "🧠 Evaluating risk..." },
+    { at: 100, label: "✅ Done." },
+  ];
+
+  // Find the sibling loading-text element for the bar's wrapper
+  const barWrapper = bar.closest(".progress");
+  let textEl = null;
+  if (barWrapper) {
+    const section = barWrapper.closest("section");
+    if (section) textEl = section.querySelector(".loading-text");
+  }
+
   let width = 0;
-  const interval = setInterval(() => {
+  let phaseIndex = 0;
+  const totalDuration = 2700;
+  const tickInterval = totalDuration / 100;
+
+  const iv = setInterval(() => {
     if (width >= 100) {
-      clearInterval(interval);
+      clearInterval(iv);
+      bar.style.width = "100%";
       if (percent) percent.innerText = "100%";
-      if (typeof onComplete === "function") setTimeout(onComplete, 100);
+      if (textEl) textEl.innerText = "✅ Scan completed.";
+      if (typeof onComplete === "function") setTimeout(onComplete, 400);
     } else {
-      width += 14;
+      width = Math.min(100, width + 1);
       bar.style.width = width + "%";
-      if (percent) percent.innerText = Math.min(width, 100) + "%";
+      if (percent) percent.innerText = width + "%";
+      if (phaseIndex < phases.length && width >= phases[phaseIndex].at) {
+        if (textEl) textEl.innerText = phases[phaseIndex].label;
+        phaseIndex++;
+      }
     }
-  }, 500);
+  }, tickInterval);
 }
 
-/* ================= CHART ================= */
+/* ================= CHART.JS ================= */
+
+// Track suspicious count separately
+let suspiciousCount = 0;
 
 let chartCtx = document.getElementById("threatChart").getContext("2d");
 
 let threatChart = new Chart(chartCtx, {
   type: "doughnut",
   data: {
-    labels: ["Safe", "Risk"],
-    datasets: [
-      {
-        data: [1, 1],
-        backgroundColor: ["#00ff99", "#ff0033"],
-      },
-    ],
+    labels: ["Safe", "Suspicious", "Dangerous"],
+    datasets: [{
+      data: [1, 0, 0],
+      backgroundColor: ["#00ff99", "#ffd166", "#ff3355"],
+      borderColor: ["rgba(0,255,153,0.3)", "rgba(255,209,102,0.3)", "rgba(255,51,85,0.3)"],
+      borderWidth: 1,
+    }],
   },
   options: {
     plugins: {
       legend: {
-        labels: { color: "#00ff99" },
+        labels: { color: "#00ff99", font: { family: "monospace" } },
       },
     },
   },
 });
 
 function updateChart() {
-  threatChart.data.datasets[0].data = [safeCount, riskCount];
+  // Recount from localStorage for accuracy
+  const history = loadHistory();
+  let s = 0, sus = 0, d = 0;
+  history.forEach(r => {
+    if (r.verdict === "Safe") s++;
+    else if (r.verdict === "Suspicious") sus++;
+    else d++;
+  });
+  // If nothing stored yet, use in-memory counters
+  if (history.length === 0) { s = safeCount; d = riskCount; sus = 0; }
+  threatChart.data.datasets[0].data = [s, sus, d];
   threatChart.update();
 }
 
 /* ================= RISK UI ================= */
-function updateRiskUI(){
+
+function updateRiskUI() {
   const meter = document.getElementById("riskMeter");
   const meterValue = document.getElementById("meterValue");
   const badge = document.getElementById("riskStatusBadge");
@@ -404,12 +738,12 @@ function updateRiskUI(){
   }
 
   if (badge) {
-    badge.classList.remove("status-safe","status-suspicious","status-phishing");
-    if (lastRiskStatus === "Phishing") {
-      badge.textContent = "Phishing";
+    badge.classList.remove("status-safe", "status-suspicious", "status-phishing");
+    if (lastRiskStatus === "Phishing" || lastRiskStatus === "DANGEROUS") {
+      badge.textContent = "Dangerous";
       badge.classList.add("status-phishing");
       if (detail) detail.textContent = "High risk indicators detected";
-    } else if (lastRiskStatus === "Suspicious") {
+    } else if (lastRiskStatus === "Suspicious" || lastRiskStatus === "SUSPICIOUS") {
       badge.textContent = "Suspicious";
       badge.classList.add("status-suspicious");
       if (detail) detail.textContent = "Review recommended";
@@ -421,44 +755,45 @@ function updateRiskUI(){
   }
 }
 
-/* ================= Helpers ================= */
-function mapStatusToPercent(status, score){
-  if (status === "Phishing") {
-    const base = typeof score === "number" ? Math.max(score, 85) : 85;
+/* ================= HELPERS ================= */
+
+function mapStatusToPercent(status, score) {
+  if (status === "Phishing" || status === "DANGEROUS") {
+    const base = typeof score === "number" ? Math.max(score, 75) : 85;
     return Math.min(100, base);
   }
-  if (status === "Suspicious") {
+  if (status === "Suspicious" || status === "SUSPICIOUS") {
     const base = typeof score === "number" ? score : 50;
-    return Math.max(40, Math.min(60, base));
+    return Math.max(35, Math.min(70, base));
   }
-  // Safe
   const base = typeof score === "number" ? score : 0;
-  return Math.min(10, Math.max(0, base));
+  return Math.min(25, Math.max(0, base));
 }
 
-function addLogEntry(url, status, percent){
+function addLogEntry(url, status, percent) {
   const tbody = document.getElementById("logsBody");
   if (!tbody) return;
   const tr = document.createElement("tr");
   const ts = new Date().toLocaleString();
-  const cls = status.toLowerCase();
-  tr.className = `new ${cls}`;
-  tr.innerHTML = `<td>${escapeHtml(url)}</td><td>${status}</td><td>${percent}%</td><td>${ts}</td>`;
+  const cls = status === "Safe" ? "safe" : status === "Suspicious" ? "suspicious" : "phishing";
+  tr.className = "new " + cls;
+  tr.innerHTML = `<td>${escapeHtml(url)}</td><td>${escapeHtml(status)}</td><td>${percent}%</td><td>${ts}</td>`;
   tbody.prepend(tr);
 }
 
-function escapeHtml(str){
+function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, (m) => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
   }[m]));
 }
-function animateMeterTo(target, meterEl, valueEl, pillEl){
+
+function animateMeterTo(target, meterEl, valueEl, pillEl) {
   const start = currentMeterPercent;
   const end = target;
   const duration = 600;
   const startTime = performance.now();
-  function easeOutCubic(x){ return 1 - Math.pow(1 - x, 3); }
-  function frame(now){
+  function easeOutCubic(x) { return 1 - Math.pow(1 - x, 3); }
+  function frame(now) {
     const t = Math.min(1, (now - startTime) / duration);
     const eased = start + (end - start) * easeOutCubic(t);
     meterEl.style.setProperty("--risk", eased);
@@ -473,49 +808,27 @@ function animateMeterTo(target, meterEl, valueEl, pillEl){
   requestAnimationFrame(frame);
 }
 
-function animateMeterTo(target, meterEl, valueEl, pillEl){
-  const start = currentMeterPercent;
-  const end = target;
-  const duration = 600;
-  const startTime = performance.now();
-  function easeOutCubic(x){ return 1 - Math.pow(1 - x, 3); }
-  function frame(now){
-    const t = Math.min(1, (now - startTime) / duration);
-    const eased = start + (end - start) * easeOutCubic(t);
-    meterEl.style.setProperty("--risk", eased);
-    if (valueEl) valueEl.textContent = Math.round(eased) + "%";
-    if (pillEl) pillEl.textContent = Math.round(eased) + "%";
-    if (t < 1) {
-      requestAnimationFrame(frame);
+function animateCounter(id, target) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  let count = 0;
+  const speed = 20;
+  const increment = Math.max(1, Math.ceil(target / 30));
+  const interval = setInterval(() => {
+    count += increment;
+    if (count >= target) {
+      el.innerText = target;
+      clearInterval(interval);
     } else {
-      currentMeterPercent = end;
+      el.innerText = count;
     }
-  }
-  requestAnimationFrame(frame);
+  }, speed);
 }
-// ================= EMAIL PHISHING CARD CLICK =================
-document.querySelectorAll(".card").forEach((card) => {
-  if (card.textContent.trim() === "Email Phishing") {
-    card.addEventListener("click", () => {
-      document.getElementById("scanner").style.display = "none";
-      document.getElementById("emailScanner").style.display = "block";
-    });
-  }
-});
 
-// Show URL scanner again
-window.showUrlScanner = function () {
-  document.getElementById("emailScanner").style.display = "none";
-  document.getElementById("scanner").style.display = "block";
-  document.getElementById("emailProgressBar").style.width = "0%";
-  document.getElementById("emailResult").innerHTML = "";
-};
+/* ================= SHARED DISPLAY HELPERS ================= */
 
-// ================= EMAIL ANALYSIS ENGINE =================
 function normalizeEmail(addr) {
-  const m = String(addr).match(
-    /<?([A-Z0-9._%+-]+)@([A-Z0-9.-]+\.[A-Z]{2,})>?/i,
-  );
+  const m = String(addr).match(/<?([A-Z0-9._%+-]+)@([A-Z0-9.-]+\.[A-Z]{2,})>?/i);
   if (!m) return null;
   return { local: m[1].toLowerCase(), domain: m[2].toLowerCase() };
 }
@@ -537,38 +850,94 @@ function tokenSimilarity(a, b) {
     for (let i = 0; i < s.length - 1; i++) set.add(s.slice(i, i + 2));
     return set;
   };
-  const A = bigrams(a),
-    B = bigrams(b);
+  const A = bigrams(a), B = bigrams(b);
   let inter = 0;
   for (const x of A) if (B.has(x)) inter++;
   const union = A.size + B.size - inter;
   return union ? inter / union : 0;
 }
 
-// High‑value brands (same as Node version)
 const HIGH_VALUE_BRANDS = [
-  "microsoft.com",
-  "office.com",
-  "live.com",
-  "google.com",
-  "gmail.com",
-  "apple.com",
-  "icloud.com",
-  "amazon.com",
-  "paypal.com",
-  "okta.com",
-  "duo.com",
+  "microsoft.com", "office.com", "live.com", "google.com", "gmail.com",
+  "apple.com", "icloud.com", "amazon.com", "paypal.com", "okta.com", "duo.com",
 ];
 
-// ================= SCAN EMAIL =================
-function scanEmail() {
-  const from = document.getElementById("emailFrom").value;
-  const subject = document.getElementById("emailSubject").value;
-  const body = document.getElementById("emailBody").value;
+/* Generic result displayer used by all sub-scanners */
+function displayGenericResult(resultElId, logPrefix, result) {
+  totalScans += 1;
+  if (result.safeInc) safeCount++;
+  if (result.riskInc) riskCount++;
 
+  animateCounter("totalScans", totalScans);
+  animateCounter("safeCountDisplay", safeCount);
+  animateCounter("riskCountDisplay", riskCount);
+
+  const noData = document.getElementById("noDataText");
+  if (noData) noData.style.display = "none";
+
+  updateChart();
+
+  lastRiskStatus = result.label.includes("HIGH RISK") ? "Phishing" :
+                   result.label.includes("SUSPICIOUS") ? "Suspicious" : "Safe";
+  lastRiskLevelPercent = mapStatusToPercent(lastRiskStatus, result.score);
+  updateRiskUI();
+
+  const resultEl = document.getElementById(resultElId);
+  if (resultEl) {
+    resultEl.innerHTML = `${result.label} (Score: ${result.score})<br><small>${result.reasons.join(" • ")}</small>`;
+    setTimeout(() => { resultEl.scrollIntoView({ behavior: "smooth", block: "nearest" }); }, 300);
+  }
+
+  addLogEntry(logPrefix, lastRiskStatus, lastRiskLevelPercent);
+
+  const ts = new Date().toLocaleString();
+  pushScanRecord(logPrefix, result.scanType || "Scan", lastRiskLevelPercent, lastRiskStatus, ts);
+  ensureClearHistoryButton();
+}
+
+/* ================= EMAIL PHISHING CARD CLICK ================= */
+
+document.querySelectorAll(".card").forEach((card) => {
+  if (card.textContent.trim() === "Email Phishing") {
+    card.addEventListener("click", () => {
+      hideAllScanners();
+      document.getElementById("emailScanner").style.display = "block";
+    });
+  }
+});
+
+/* ================= MASTER showUrlScanner ================= */
+
+window.showUrlScanner = function () {
+  hideAllScanners();
+  document.getElementById("scanner").style.display = "block";
+};
+
+function hideAllScanners() {
+  const ids = ["emailScanner","spearScanner","whalingScanner","smishingScanner",
+                "vishingScanner","cloneScanner","quishingScanner","anglerScanner",
+                "httpsScanner","evilTwinScanner"];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "none";
+  });
+  document.getElementById("scanner").style.display = "none";
+}
+
+/* ================= EMAIL ANALYSIS ENGINE ================= */
+
+function scanEmail() {
+  const from = document.getElementById("emailFrom").value.trim();
+  const subject = document.getElementById("emailSubject").value.trim();
+  const body = document.getElementById("emailBody").value.trim();
+  if (!from && !subject && !body) {
+    showInlineError("emailFrom", "⚠ Please fill in at least one field.");
+    return;
+  }
   animateCyberProgress("emailProgressBar", "emailProgressPercent", function () {
     const result = analyzeEmailContent(from, subject, body);
-    displayEmailResult(result);
+    result.scanType = "Email";
+    displayGenericResult("emailResult", "email://" + (normalizeEmail(from)?.domain || from || "-"), result);
   });
 }
 
@@ -576,2067 +945,717 @@ function analyzeEmailContent(from, subject, body) {
   let score = 0;
   const reasons = [];
 
-  // 1. Parse From
   const fromParsed = normalizeEmail(from);
-  if (!fromParsed) {
-    score += 15;
-    reasons.push("Invalid or missing From address");
-  }
+  if (!fromParsed) { score += 15; reasons.push("Invalid or missing From address"); }
 
-  // 2. Domain checks
   if (fromParsed) {
     const fromBase = getBaseDomain(fromParsed.domain);
-
-    // Compare with known brands
     for (const brand of HIGH_VALUE_BRANDS) {
       const brandBase = getBaseDomain(brand);
       const sim = tokenSimilarity(fromBase, brandBase);
       if (sim > 0.55 && fromBase !== brandBase) {
         score += 20;
-        reasons.push(
-          `From domain looks like ${brandBase} but is actually ${fromBase}`,
-        );
+        reasons.push(`From domain mimics ${brandBase} (actually ${fromBase})`);
         break;
       }
     }
-
-    // Check for suspicious TLDs
     const tld = fromParsed.domain.split(".").pop();
-    const suspiciousTLDs = [
-      "zip",
-      "mov",
-      "top",
-      "xyz",
-      "click",
-      "country",
-      "kim",
-      "gq",
-      "tk",
-      "cf",
-    ];
-    if (suspiciousTLDs.includes(tld)) {
-      score += 8;
-      reasons.push(`From domain uses risky TLD .${tld}`);
+    if (["zip","mov","top","xyz","click","country","kim","gq","tk","cf"].includes(tld)) {
+      score += 8; reasons.push(`Risky TLD .${tld}`);
+    }
+    // Mismatched reply-to (simulated)
+    if (fromParsed.local.includes("noreply") || fromParsed.local.includes("no-reply")) {
+      score += 6; reasons.push("No-reply sender — reply-to mismatch risk");
     }
   }
 
-  // 3. Urgency keywords in subject/body
-  const urgentPatterns = [
-    /\burgent\b/i,
-    /\bimmediately\b/i,
-    /\baction required\b/i,
-    /\baccount (?:locked|suspended)\b/i,
-    /\bverify\b/i,
-    /\breset\b/i,
-    /\bsecurity alert\b/i,
-    /\bunauthorized\b/i,
-  ];
-  const urgentHits = urgentPatterns.filter(
-    (r) => r.test(subject) || r.test(body),
-  ).length;
-  if (urgentHits >= 2) {
-    score += 12;
-    reasons.push(`Urgency/threat language (${urgentHits} indicators)`);
-  } else if (urgentHits === 1) {
-    score += 6;
-    reasons.push("Some urgency/threat language");
-  }
+  const urgentPats = [/\burgent\b/i,/\bimmediately\b/i,/\baction required\b/i,/\baccount (?:locked|suspended)\b/i,/\bverify\b/i,/\breset\b/i,/\bsecurity alert\b/i,/\bunauthorized\b/i,/\bact now\b/i,/\bverify immediately\b/i];
+  const urgentHits = urgentPats.filter(r => r.test(subject) || r.test(body)).length;
+  if (urgentHits >= 2) { score += 12; reasons.push(`Urgent language (${urgentHits} indicators)`); }
+  else if (urgentHits === 1) { score += 6; reasons.push("Some urgency language"); }
 
-  // 4. Credential‑related keywords
-  const credPatterns = [
-    /\bpassword\b/i,
-    /\bpasscode\b/i,
-    /\bOTP\b/i,
-    /\b2fa\b/i,
-    /\bmfa\b/i,
-    /\blog\s*in\b/i,
-    /\bsign\s*in\b/i,
-    /\bverify (?:your )?identity\b/i,
-  ];
-  const credHits = credPatterns.filter(
-    (r) => r.test(subject) || r.test(body),
-  ).length;
-  if (credHits >= 2) {
-    score += 18;
-    reasons.push(`Credential/OTP language (${credHits} indicators)`);
-  } else if (credHits === 1) {
-    score += 10;
-    reasons.push("Possible credential/OTP language");
-  }
+  const credPats = [/\bpassword\b/i,/\bpasscode\b/i,/\bOTP\b/i,/\b2fa\b/i,/\bmfa\b/i,/\blog\s*in\b/i,/\bsign\s*in\b/i,/\bverify (?:your )?identity\b/i];
+  const credHits = credPats.filter(r => r.test(subject) || r.test(body)).length;
+  if (credHits >= 2) { score += 18; reasons.push(`Credential/OTP language (${credHits})`); }
+  else if (credHits === 1) { score += 10; reasons.push("Possible credential language"); }
 
-  // 5. Payment/invoice keywords
-  const payPatterns = [
-    /\binvoice\b/i,
-    /\bwire\b/i,
-    /\bACH\b/i,
-    /\bpayment\b/i,
-    /\bgift card\b/i,
-    /\bcrypto\b/i,
-  ];
-  const payHits = payPatterns.filter(
-    (r) => r.test(subject) || r.test(body),
-  ).length;
-  if (payHits >= 2) {
-    score += 10;
-    reasons.push(`Payment/invoice lure (${payHits} indicators)`);
-  } else if (payHits === 1) {
-    score += 5;
-    reasons.push("Possible payment/invoice lure");
-  }
+  const payPats = [/\binvoice\b/i,/\bwire\b/i,/\bACH\b/i,/\bpayment\b/i,/\bgift card\b/i,/\bcrypto\b/i];
+  const payHits = payPats.filter(r => r.test(subject) || r.test(body)).length;
+  if (payHits >= 2) { score += 10; reasons.push(`Payment/invoice lure (${payHits})`); }
+  else if (payHits === 1) { score += 5; reasons.push("Possible payment lure"); }
 
-  // 6. Extract URLs from body and check them
   const urlRegex = /\bhttps?:\/\/[^\s<>"')]+/gi;
   const urls = body.match(urlRegex) || [];
   if (urls.length >= 3) score += 5;
-
   for (const u of urls) {
     try {
       const url = new URL(u);
-      const host = url.hostname.toLowerCase();
-      const base = getBaseDomain(host);
+      const base = getBaseDomain(url.hostname.toLowerCase());
       if (fromParsed && base && getBaseDomain(fromParsed.domain) !== base) {
-        score += 6;
-        reasons.push(`Link domain (${base}) differs from sender domain`);
-        break; // one is enough
+        score += 6; reasons.push(`Link domain (${base}) differs from sender`); break;
       }
     } catch (e) {}
   }
 
-  // Normalize score (0-100)
   score = Math.min(100, Math.max(0, score));
-
-  // Determine label
-  let label, safeInc, riskInc;
-  if (score >= 50) {
-    label = "⚠ HIGH RISK – Phishing Indicators Found";
-    riskInc = 1;
-    safeInc = 0;
-  } else if (score >= 20) {
-    label = "⚠ SUSPICIOUS – Review Carefully";
-    riskInc = 1; // treat as risky for dashboard simplicity
-    safeInc = 0;
-  } else {
-    label = "✅ SAFE – No obvious signs";
-    safeInc = 1;
-    riskInc = 0;
-  }
-
+  let label, safeInc = 0, riskInc = 0;
+  if (score >= 50) { label = "⚠ HIGH RISK – Phishing Indicators Found"; riskInc = 1; }
+  else if (score >= 20) { label = "⚠ SUSPICIOUS – Review Carefully"; riskInc = 1; }
+  else { label = "✅ SAFE – No obvious signs"; safeInc = 1; }
   return { score, reasons, label, safeInc, riskInc };
 }
 
-function displayEmailResult(result) {
-  // Update dashboard counters
-  totalScans += 1;
-  safeCount += result.safeInc;
-  riskCount += result.riskInc;
+/* ================= SPEAR PHISHING CARD ================= */
 
-  animateCounter("totalScans", totalScans);
-  animateCounter("safeCountDisplay", safeCount);
-  animateCounter("riskCountDisplay", riskCount);
-
-  if (totalScans > 0) {
-    document.getElementById("noDataText").style.display = "none";
-  }
-
-  updateChart();
-  lastRiskStatus =
-    result.label.includes("HIGH RISK") ? "Phishing" :
-    result.label.includes("SUSPICIOUS") ? "Suspicious" : "Safe";
-  lastRiskLevelPercent = mapStatusToPercent(lastRiskStatus, result.score);
-  updateRiskUI();
-
-  // Show result message
-  const resultEl = document.getElementById("emailResult");
-  resultEl.innerHTML = `${result.label} (Score: ${result.score})<br><small>${result.reasons.join(" • ")}</small>`;
-  addLogEntry("email://"+(normalizeEmail(document.getElementById("emailFrom").value)?.domain || "-"), lastRiskStatus, lastRiskLevelPercent);
-}
-
-// ================= SPEAR PHISHING CARD CLICK =================
 document.querySelectorAll(".card").forEach((card) => {
   if (card.textContent.trim() === "Spear Phishing") {
     card.addEventListener("click", () => {
-      document.getElementById("scanner").style.display = "none";
-      document.getElementById("emailScanner").style.display = "none";
+      hideAllScanners();
       document.getElementById("spearScanner").style.display = "block";
     });
   }
 });
 
-// Extend showUrlScanner to also hide spear scanner
-const originalShowUrlScanner = window.showUrlScanner;
-window.showUrlScanner = function () {
-  document.getElementById("emailScanner").style.display = "none";
-  document.getElementById("spearScanner").style.display = "none";
-  document.getElementById("scanner").style.display = "block";
-  document.getElementById("emailProgressBar").style.width = "0%";
-  document.getElementById("spearProgressBar").style.width = "0%";
-  document.getElementById("emailResult").innerHTML = "";
-  document.getElementById("spearResult").innerHTML = "";
-};
-
-// ================= SPEAR PHISHING SCAN =================
 function scanSpear() {
-  const from = document.getElementById("spearFrom").value;
-  const to = document.getElementById("spearTo").value;
-  const recipientName = document
-    .getElementById("spearName")
-    .value.trim()
-    .toLowerCase();
-  const subject = document.getElementById("spearSubject").value;
-  const body = document.getElementById("spearBody").value;
-
+  const from = document.getElementById("spearFrom").value.trim();
+  const to = document.getElementById("spearTo").value.trim();
+  const recipientName = document.getElementById("spearName").value.trim().toLowerCase();
+  const subject = document.getElementById("spearSubject").value.trim();
+  const body = document.getElementById("spearBody").value.trim();
+  if (!from && !body) { showInlineError("spearFrom", "⚠ Please fill in the sender and body."); return; }
   animateCyberProgress("spearProgressBar", "spearProgressPercent", function () {
     const result = analyzeSpearContent(from, to, recipientName, subject, body);
-    displaySpearResult(result);
+    result.scanType = "Spear Phishing";
+    displayGenericResult("spearResult", "spear://" + (normalizeEmail(from)?.domain || from || "-"), result);
   });
 }
 
 function analyzeSpearContent(from, to, recipientName, subject, body) {
   let score = 0;
   const reasons = [];
-
-  // 1. Parse sender
   const fromParsed = normalizeEmail(from);
-  if (!fromParsed) {
-    score += 15;
-    reasons.push("Invalid or missing From address");
-  }
+  if (!fromParsed) { score += 15; reasons.push("Invalid or missing From address"); }
 
-  // 2. Check if sender domain is suspicious (same as email scanner)
   if (fromParsed) {
     const fromBase = getBaseDomain(fromParsed.domain);
     for (const brand of HIGH_VALUE_BRANDS) {
       const brandBase = getBaseDomain(brand);
       const sim = tokenSimilarity(fromBase, brandBase);
-      if (sim > 0.55 && fromBase !== brandBase) {
-        score += 20;
-        reasons.push(
-          `From domain looks like ${brandBase} but is actually ${fromBase}`,
-        );
-        break;
-      }
+      if (sim > 0.55 && fromBase !== brandBase) { score += 20; reasons.push(`From domain mimics ${brandBase}`); break; }
     }
-
     const tld = fromParsed.domain.split(".").pop();
-    const suspiciousTLDs = [
-      "zip",
-      "mov",
-      "top",
-      "xyz",
-      "click",
-      "country",
-      "kim",
-      "gq",
-      "tk",
-      "cf",
-    ];
-    if (suspiciousTLDs.includes(tld)) {
-      score += 8;
-      reasons.push(`From domain uses risky TLD .${tld}`);
-    }
+    if (["zip","mov","top","xyz","click","country","kim","gq","tk","cf"].includes(tld)) { score += 8; reasons.push(`Risky TLD .${tld}`); }
   }
 
-  // 3. Check for personalization (key for spear phishing)
   const fullText = (subject + " " + body).toLowerCase();
   if (recipientName && fullText.includes(recipientName)) {
-    // Personalization present – less risky
-    reasons.push("Email includes recipient’s name (good)");
-  } else {
-    // No personalization – could still be spear if other signs exist, but we flag it
-    score += 10;
-    reasons.push(
-      "Email does not contain recipient’s name (lack of personalization)",
-    );
+    reasons.push("Email includes recipient's name (personalized — higher spear risk)");
+    score += 8;
+  } else if (recipientName) {
+    score += 5; reasons.push("Recipient name not found in email body");
   }
 
-  // Check for personalized greeting patterns
-  const greetingPatterns = [
-    new RegExp(`\\bdear\\s+${recipientName}\\b`, "i"),
-    new RegExp(`\\bhi\\s+${recipientName}\\b`, "i"),
-    new RegExp(`\\bhello\\s+${recipientName}\\b`, "i"),
-  ];
-  let hasGreeting = false;
-  for (const pat of greetingPatterns) {
-    if (pat.test(fullText)) {
-      hasGreeting = true;
-      break;
-    }
-  }
-  if (!hasGreeting && recipientName) {
-    // No greeting with name, suspicious if other signs present
-    score += 5;
-    reasons.push("No personalized greeting found");
-  }
+  const urgentPats = [/\burgent\b/i,/\bimmediately\b/i,/\baction required\b/i,/\bverify\b/i,/\breset\b/i,/\bsecurity alert\b/i,/\bunauthorized\b/i];
+  const urgentHits = urgentPats.filter(r => r.test(subject) || r.test(body)).length;
+  if (urgentHits >= 2) { score += 12; reasons.push(`Urgency language (${urgentHits})`); }
+  else if (urgentHits === 1) { score += 6; reasons.push("Some urgency language"); }
 
-  // 4. Urgency keywords (same as email scanner)
-  const urgentPatterns = [
-    /\burgent\b/i,
-    /\bimmediately\b/i,
-    /\baction required\b/i,
-    /\baccount (?:locked|suspended)\b/i,
-    /\bverify\b/i,
-    /\breset\b/i,
-    /\bsecurity alert\b/i,
-    /\bunauthorized\b/i,
-  ];
-  const urgentHits = urgentPatterns.filter(
-    (r) => r.test(subject) || r.test(body),
-  ).length;
-  if (urgentHits >= 2) {
-    score += 12;
-    reasons.push(`Urgency/threat language (${urgentHits} indicators)`);
-  } else if (urgentHits === 1) {
-    score += 6;
-    reasons.push("Some urgency/threat language");
-  }
+  const credPats = [/\bpassword\b/i,/\bOTP\b/i,/\b2fa\b/i,/\bsign\s*in\b/i,/\bverify (?:your )?identity\b/i];
+  const credHits = credPats.filter(r => r.test(subject) || r.test(body)).length;
+  if (credHits >= 2) { score += 18; reasons.push(`Credential language (${credHits})`); }
+  else if (credHits === 1) { score += 10; reasons.push("Possible credential language"); }
 
-  // 5. Credential keywords
-  const credPatterns = [
-    /\bpassword\b/i,
-    /\bpasscode\b/i,
-    /\bOTP\b/i,
-    /\b2fa\b/i,
-    /\bmfa\b/i,
-    /\blog\s*in\b/i,
-    /\bsign\s*in\b/i,
-    /\bverify (?:your )?identity\b/i,
-  ];
-  const credHits = credPatterns.filter(
-    (r) => r.test(subject) || r.test(body),
-  ).length;
-  if (credHits >= 2) {
-    score += 18;
-    reasons.push(`Credential/OTP language (${credHits} indicators)`);
-  } else if (credHits === 1) {
-    score += 10;
-    reasons.push("Possible credential/OTP language");
-  }
-
-  // 6. Payment/invoice keywords
-  const payPatterns = [
-    /\binvoice\b/i,
-    /\bwire\b/i,
-    /\bACH\b/i,
-    /\bpayment\b/i,
-    /\bgift card\b/i,
-    /\bcrypto\b/i,
-  ];
-  const payHits = payPatterns.filter(
-    (r) => r.test(subject) || r.test(body),
-  ).length;
-  if (payHits >= 2) {
-    score += 10;
-    reasons.push(`Payment/invoice lure (${payHits} indicators)`);
-  } else if (payHits === 1) {
-    score += 5;
-    reasons.push("Possible payment/invoice lure");
-  }
-
-  // 7. Check for internal vs external (if to domain matches org – we don't have orgDomains list, so skip)
-
-  // 8. Extract URLs and check mismatch (similar to email scanner)
   const urlRegex = /\bhttps?:\/\/[^\s<>"')]+/gi;
   const urls = body.match(urlRegex) || [];
-  if (urls.length >= 3) score += 5;
-
   for (const u of urls) {
     try {
       const url = new URL(u);
-      const host = url.hostname.toLowerCase();
-      const base = getBaseDomain(host);
-      if (fromParsed && base && getBaseDomain(fromParsed.domain) !== base) {
-        score += 6;
-        reasons.push(`Link domain (${base}) differs from sender domain`);
-        break;
-      }
+      const base = getBaseDomain(url.hostname.toLowerCase());
+      if (fromParsed && base && getBaseDomain(fromParsed.domain) !== base) { score += 6; reasons.push(`Link domain (${base}) differs from sender`); break; }
     } catch (e) {}
   }
 
-  // Normalize score (0-100)
   score = Math.min(100, Math.max(0, score));
-
-  // Determine label (thresholds may differ for spear)
-  let label, safeInc, riskInc;
-  if (score >= 60) {
-    label = "⚠ HIGH RISK – Spear Phishing Indicators Strong";
-    riskInc = 1;
-    safeInc = 0;
-  } else if (score >= 30) {
-    label = "⚠ SUSPICIOUS – Targeted Email? Review Carefully";
-    riskInc = 1;
-    safeInc = 0;
-  } else {
-    label = "✅ SAFE – Low Risk of Spear Phishing";
-    safeInc = 1;
-    riskInc = 0;
-  }
-
+  let label, safeInc = 0, riskInc = 0;
+  if (score >= 60) { label = "⚠ HIGH RISK – Spear Phishing Indicators Strong"; riskInc = 1; }
+  else if (score >= 30) { label = "⚠ SUSPICIOUS – Targeted Email? Review Carefully"; riskInc = 1; }
+  else { label = "✅ SAFE – Low Risk of Spear Phishing"; safeInc = 1; }
   return { score, reasons, label, safeInc, riskInc };
 }
 
-function displaySpearResult(result) {
-  // Update dashboard counters
-  totalScans += 1;
-  safeCount += result.safeInc;
-  riskCount += result.riskInc;
+/* ================= WHALING CARD ================= */
 
-  animateCounter("totalScans", totalScans);
-  animateCounter("safeCountDisplay", safeCount);
-  animateCounter("riskCountDisplay", riskCount);
-
-  if (totalScans > 0) {
-    document.getElementById("noDataText").style.display = "none";
-  }
-
-  updateChart();
-  lastRiskStatus =
-    result.label.includes("HIGH RISK") ? "Phishing" :
-    result.label.includes("SUSPICIOUS") ? "Suspicious" : "Safe";
-  lastRiskLevelPercent = mapStatusToPercent(lastRiskStatus, result.score);
-  updateRiskUI();
-
-  // Show result message
-  const resultEl = document.getElementById("spearResult");
-  resultEl.innerHTML = `${result.label} (Score: ${result.score})<br><small>${result.reasons.join(" • ")}</small>`;
-  addLogEntry("email://"+(normalizeEmail(document.getElementById("spearFrom").value)?.domain || "-"), lastRiskStatus, lastRiskLevelPercent);
-}
-
-// ================= WHALING CARD CLICK =================
 document.querySelectorAll(".card").forEach((card) => {
   if (card.textContent.trim() === "Whaling") {
     card.addEventListener("click", () => {
-      document.getElementById("scanner").style.display = "none";
-      document.getElementById("emailScanner").style.display = "none";
-      document.getElementById("spearScanner").style.display = "none";
+      hideAllScanners();
       document.getElementById("whalingScanner").style.display = "block";
     });
   }
 });
 
-// Extend showUrlScanner to also hide whaling scanner
-const originalShowUrlScanner1 = window.showUrlScanner;
-window.showUrlScanner = function () {
-  document.getElementById("emailScanner").style.display = "none";
-  document.getElementById("spearScanner").style.display = "none";
-  document.getElementById("whalingScanner").style.display = "none";
-  document.getElementById("scanner").style.display = "block";
-  document.getElementById("emailProgressBar").style.width = "0%";
-  document.getElementById("spearProgressBar").style.width = "0%";
-  document.getElementById("whaleProgressBar").style.width = "0%";
-  document.getElementById("emailResult").innerHTML = "";
-  document.getElementById("spearResult").innerHTML = "";
-  document.getElementById("whaleResult").innerHTML = "";
-};
-
-// ================= WHALING SCAN =================
 function scanWhaling() {
-  const from = document.getElementById("whaleFrom").value;
-  const to = document.getElementById("whaleTo").value;
-  const targetName = document
-    .getElementById("whaleTargetName")
-    .value.trim()
-    .toLowerCase();
-  const targetRole = document
-    .getElementById("whaleTargetRole")
-    .value.trim()
-    .toLowerCase();
-  const subject = document.getElementById("whaleSubject").value;
-  const body = document.getElementById("whaleBody").value;
-
+  const from = document.getElementById("whaleFrom").value.trim();
+  const to = document.getElementById("whaleTo").value.trim();
+  const targetName = document.getElementById("whaleTargetName").value.trim().toLowerCase();
+  const targetRole = document.getElementById("whaleTargetRole").value.trim().toLowerCase();
+  const subject = document.getElementById("whaleSubject").value.trim();
+  const body = document.getElementById("whaleBody").value.trim();
+  if (!from && !body) { showInlineError("whaleFrom", "⚠ Please fill in the sender and body."); return; }
   animateCyberProgress("whaleProgressBar", "whaleProgressPercent", function () {
-    const result = analyzeWhalingContent(
-      from,
-      to,
-      targetName,
-      targetRole,
-      subject,
-      body,
-    );
-    displayWhalingResult(result);
+    const result = analyzeWhalingContent(from, to, targetName, targetRole, subject, body);
+    result.scanType = "Whaling";
+    displayGenericResult("whaleResult", "whale://" + (normalizeEmail(from)?.domain || from || "-"), result);
   });
 }
 
-function analyzeWhalingContent(
-  from,
-  to,
-  targetName,
-  targetRole,
-  subject,
-  body,
-) {
+function analyzeWhalingContent(from, to, targetName, targetRole, subject, body) {
   let score = 0;
   const reasons = [];
-
-  // 1. Parse sender
   const fromParsed = normalizeEmail(from);
-  if (!fromParsed) {
-    score += 15;
-    reasons.push("Invalid or missing From address");
-  }
+  if (!fromParsed) { score += 15; reasons.push("Invalid or missing From address"); }
 
-  // 2. Sender domain checks (same as before)
   if (fromParsed) {
     const fromBase = getBaseDomain(fromParsed.domain);
     for (const brand of HIGH_VALUE_BRANDS) {
       const brandBase = getBaseDomain(brand);
       const sim = tokenSimilarity(fromBase, brandBase);
-      if (sim > 0.55 && fromBase !== brandBase) {
-        score += 20;
-        reasons.push(
-          `From domain looks like ${brandBase} but is actually ${fromBase}`,
-        );
-        break;
-      }
+      if (sim > 0.55 && fromBase !== brandBase) { score += 20; reasons.push(`From domain mimics ${brandBase}`); break; }
     }
-
     const tld = fromParsed.domain.split(".").pop();
-    const suspiciousTLDs = [
-      "zip",
-      "mov",
-      "top",
-      "xyz",
-      "click",
-      "country",
-      "kim",
-      "gq",
-      "tk",
-      "cf",
-    ];
-    if (suspiciousTLDs.includes(tld)) {
-      score += 8;
-      reasons.push(`From domain uses risky TLD .${tld}`);
-    }
+    if (["zip","mov","top","xyz","click","country","kim","gq","tk","cf"].includes(tld)) { score += 8; reasons.push(`Risky TLD .${tld}`); }
   }
 
-  // 3. Check if sender is impersonating an internal executive
-  //    We don't have an org domain list, but we can check if sender domain matches recipient domain
   const toParsed = normalizeEmail(to);
-  if (fromParsed && toParsed) {
-    const fromBase = getBaseDomain(fromParsed.domain);
-    const toBase = getBaseDomain(toParsed.domain);
-    if (fromBase !== toBase) {
-      score += 15;
-      reasons.push(
-        `Sender domain (${fromBase}) differs from recipient domain (${toBase}) – external sender`,
-      );
-    } else {
-      // Internal, but might be impersonating a C-level
-      // We'll add points if the display name or local part suggests executive
-    }
+  if (fromParsed && toParsed && getBaseDomain(fromParsed.domain) !== getBaseDomain(toParsed.domain)) {
+    score += 15; reasons.push("External sender targeting internal executive");
   }
 
-  // 4. Executive role in subject/body
   const fullText = (subject + " " + body).toLowerCase();
-  const executiveRoles = [
-    "ceo",
-    "cfo",
-    "cto",
-    "coo",
-    "president",
-    "director",
-    "executive",
-    "vp",
-    "vice president",
-  ];
-  const roleHits = executiveRoles.filter((r) => fullText.includes(r)).length;
-  if (roleHits > 0) {
-    score += 10;
-    reasons.push(
-      `Executive role mentioned (${roleHits} times) – could be targeting authority`,
-    );
-  }
+  const execRoles = ["ceo","cfo","cto","coo","president","director","executive","vp","vice president"];
+  const roleHits = execRoles.filter(r => fullText.includes(r)).length;
+  if (roleHits > 0) { score += 10; reasons.push(`Executive role mentioned (${roleHits}x)`); }
 
-  // 5. Check if target's name is in the email (personalization)
-  if (targetName && fullText.includes(targetName)) {
-    // Personalized – could be legit or carefully crafted
-    reasons.push("Email contains target’s name");
-  } else if (targetName) {
-    score += 8;
-    reasons.push(
-      "Email does not contain target’s name (lack of personalization for executive)",
-    );
-  }
+  if (targetName && fullText.includes(targetName)) { reasons.push("Target's name present (personalized)"); }
+  else if (targetName) { score += 8; reasons.push("Target's name not in email body"); }
 
-  // 6. Check if target's role is in the email
-  if (targetRole && fullText.includes(targetRole)) {
-    reasons.push("Email mentions target’s role");
-  } else if (targetRole) {
-    score += 6;
-    reasons.push(
-      "Email does not mention target’s role (missed opportunity for personalization)",
-    );
-  }
+  const urgentPats = [/\burgent\b/i,/\bimmediately\b/i,/\bmandatory\b/i,/\bdeadline\b/i,/\bconfidential\b/i,/\bwire\b/i,/\btransfer\b/i];
+  const urgentHits = urgentPats.filter(r => r.test(subject) || r.test(body)).length;
+  if (urgentHits >= 2) { score += 15; reasons.push(`Urgent/financial language (${urgentHits})`); }
+  else if (urgentHits === 1) { score += 7; reasons.push("Some urgency/financial language"); }
 
-  // 7. Urgency / authority language (whaling often uses urgent directives)
-  const urgentPatterns = [
-    /\burgent\b/i,
-    /\bimmediately\b/i,
-    /\baction required\b/i,
-    /\bcomply\b/i,
-    /\bmandatory\b/i,
-    /\bdeadline\b/i,
-    /\bconfidential\b/i,
-  ];
-  const urgentHits = urgentPatterns.filter(
-    (r) => r.test(subject) || r.test(body),
-  ).length;
-  if (urgentHits >= 2) {
-    score += 12;
-    reasons.push(`Urgency/authority language (${urgentHits} indicators)`);
-  } else if (urgentHits === 1) {
-    score += 6;
-    reasons.push("Some urgency/authority language");
-  }
+  const payPats = [/\bwire\b/i,/\btransfer\b/i,/\bgift card\b/i,/\binvoice\b/i,/\bpayment\b/i];
+  const payHits = payPats.filter(r => r.test(subject) || r.test(body)).length;
+  if (payHits >= 2) { score += 15; reasons.push(`Financial request keywords (${payHits})`); }
+  else if (payHits === 1) { score += 8; reasons.push("Possible financial request"); }
 
-  // 8. Credential keywords (often present in whaling)
-  const credPatterns = [
-    /\bpassword\b/i,
-    /\bwire\b/i,
-    /\btransfer\b/i,
-    /\bpayment\b/i,
-    /\bconfidential\b/i,
-    /\bsecret\b/i,
-    /\bproprietary\b/i,
-  ];
-  const credHits = credPatterns.filter(
-    (r) => r.test(subject) || r.test(body),
-  ).length;
-  if (credHits >= 2) {
-    score += 15;
-    reasons.push(`Sensitive keywords (${credHits} indicators)`);
-  } else if (credHits === 1) {
-    score += 8;
-    reasons.push("Possible sensitive content");
-  }
+  if (/\battach/i.test(fullText)) { score += 5; reasons.push("Attachment mentioned"); }
 
-  // 9. Attachments (though we don't have file input, we can check for attachment mentions)
-  if (/\battach\b/i.test(fullText) || /\battachment\b/i.test(fullText)) {
-    score += 5;
-    reasons.push("Email mentions an attachment (common in whaling)");
-  }
-
-  // 10. URL checks (same as before)
-  const urlRegex = /\bhttps?:\/\/[^\s<>"')]+/gi;
-  const urls = body.match(urlRegex) || [];
-  if (urls.length >= 3) score += 5;
-
-  for (const u of urls) {
-    try {
-      const url = new URL(u);
-      const host = url.hostname.toLowerCase();
-      const base = getBaseDomain(host);
-      if (fromParsed && base && getBaseDomain(fromParsed.domain) !== base) {
-        score += 6;
-        reasons.push(`Link domain (${base}) differs from sender domain`);
-        break;
-      }
-    } catch (e) {}
-  }
-
-  // Normalize score (0-100)
   score = Math.min(100, Math.max(0, score));
-
-  // Label thresholds (higher due to executive focus)
-  let label, safeInc, riskInc;
-  if (score >= 65) {
-    label = "⚠ HIGH RISK – Whaling Indicators Strong";
-    riskInc = 1;
-    safeInc = 0;
-  } else if (score >= 35) {
-    label = "⚠ SUSPICIOUS – Potential Executive Targeting";
-    riskInc = 1;
-    safeInc = 0;
-  } else {
-    label = "✅ SAFE – Low Risk of Whaling";
-    safeInc = 1;
-    riskInc = 0;
-  }
-
+  let label, safeInc = 0, riskInc = 0;
+  if (score >= 65) { label = "⚠ HIGH RISK – Whaling Indicators Strong"; riskInc = 1; }
+  else if (score >= 35) { label = "⚠ SUSPICIOUS – Potential Executive Targeting"; riskInc = 1; }
+  else { label = "✅ SAFE – Low Risk of Whaling"; safeInc = 1; }
   return { score, reasons, label, safeInc, riskInc };
 }
 
-function displayWhalingResult(result) {
-  // Update dashboard counters
-  totalScans += 1;
-  safeCount += result.safeInc;
-  riskCount += result.riskInc;
+/* ================= SMISHING CARD ================= */
 
-  animateCounter("totalScans", totalScans);
-  animateCounter("safeCountDisplay", safeCount);
-  animateCounter("riskCountDisplay", riskCount);
-
-  if (totalScans > 0) {
-    document.getElementById("noDataText").style.display = "none";
-  }
-
-  updateChart();
-  lastRiskStatus =
-    result.label.includes("HIGH RISK") ? "Phishing" :
-    result.label.includes("SUSPICIOUS") ? "Suspicious" : "Safe";
-  lastRiskLevelPercent = mapStatusToPercent(lastRiskStatus, result.score);
-  updateRiskUI();
-
-  // Show result message
-  const resultEl = document.getElementById("whaleResult");
-  resultEl.innerHTML = `${result.label} (Score: ${result.score})<br><small>${result.reasons.join(" • ")}</small>`;
-  addLogEntry("email://"+(normalizeEmail(document.getElementById("whaleFrom").value)?.domain || "-"), lastRiskStatus, lastRiskLevelPercent);
-}
-
-// ================= SMISHING CARD CLICK =================
 document.querySelectorAll(".card").forEach((card) => {
   if (card.textContent.trim() === "Smishing") {
     card.addEventListener("click", () => {
-      document.getElementById("scanner").style.display = "none";
-      document.getElementById("emailScanner").style.display = "none";
-      document.getElementById("spearScanner").style.display = "none";
-      document.getElementById("whalingScanner").style.display = "none";
+      hideAllScanners();
       document.getElementById("smishingScanner").style.display = "block";
     });
   }
 });
 
-// Extend showUrlScanner to also hide smishing scanner
-window.showUrlScanner = function () {
-  document.getElementById("emailScanner").style.display = "none";
-  document.getElementById("spearScanner").style.display = "none";
-  document.getElementById("whalingScanner").style.display = "none";
-  document.getElementById("smishingScanner").style.display = "none";
-  document.getElementById("scanner").style.display = "block";
-  document.getElementById("emailProgressBar").style.width = "0%";
-  document.getElementById("spearProgressBar").style.width = "0%";
-  document.getElementById("whaleProgressBar").style.width = "0%";
-  document.getElementById("smsProgressBar").style.width = "0%";
-  document.getElementById("emailResult").innerHTML = "";
-  document.getElementById("spearResult").innerHTML = "";
-  document.getElementById("whaleResult").innerHTML = "";
-  document.getElementById("smsResult").innerHTML = "";
-};
-
-// ================= SMISHING SCAN =================
 function scanSmishing() {
-  const sender = document.getElementById("smsSender").value;
-  const recipient = document.getElementById("smsRecipient").value;
-  const body = document.getElementById("smsBody").value;
-
+  const sender = document.getElementById("smsSender").value.trim();
+  const body = document.getElementById("smsBody").value.trim();
+  if (!body) { showInlineError("smsBody", "⚠ Please enter the SMS message content."); return; }
   animateCyberProgress("smsProgressBar", "smsProgressPercent", function () {
-    const result = analyzeSmishingContent(sender, recipient, body);
-    displaySmishingResult(result);
+    const result = analyzeSmishingContent(sender, "", body);
+    result.scanType = "Smishing";
+    displayGenericResult("smsResult", "sms://" + (sender || "-"), result);
   });
 }
 
 function analyzeSmishingContent(sender, recipient, body) {
   let score = 0;
   const reasons = [];
-  const fullText = body.toLowerCase();
 
-  // 1. Check for suspicious sender patterns
   if (sender) {
-    // If sender is a short code or generic name (e.g., "Bank", "Amazon"), flag it
-    const genericNames = [
-      "bank",
-      "amazon",
-      "paypal",
-      "apple",
-      "google",
-      "microsoft",
-      "netflix",
-      "irs",
-    ];
-    const isGeneric = genericNames.some((name) =>
-      sender.toLowerCase().includes(name),
-    );
-    if (isGeneric) {
-      score += 10;
-      reasons.push("Sender uses a generic brand name (common in smishing)");
+    const genericNames = ["bank","amazon","paypal","apple","google","microsoft","netflix","irs","fedex","ups","dhl"];
+    if (genericNames.some(n => sender.toLowerCase().includes(n))) {
+      score += 10; reasons.push("Sender uses a generic brand name");
     }
-
-    // Check if sender is a phone number (simple regex: contains digits, no @)
-    const isPhoneNumber =
-      /^[\d\+\-\(\)\s]+$/.test(sender.replace(/[^0-9+]/g, "")) &&
-      sender.replace(/[^0-9]/g, "").length >= 10;
-    if (!isPhoneNumber && !isGeneric) {
-      // Possibly an alphanumeric sender ID – could be legit but less common
-      score += 5;
-      reasons.push("Sender is not a standard phone number (could be spoofed)");
+    const brandNames = ["paypal","amazon","apple","google","microsoft","netflix","bank","irs"];
+    const senderLower = sender.toLowerCase();
+    for (const brand of brandNames) {
+      if (senderLower.includes(brand) && senderLower !== brand) {
+        score += 15; reasons.push(`Sender impersonates "${brand}"`); break;
+      }
     }
-  } else {
-    score += 5;
-    reasons.push("No sender information provided");
-  }
+  } else { score += 5; reasons.push("No sender information"); }
 
-  // 2. Check for urgency keywords (common in smishing)
-  const urgentPatterns = [
-    /\burgent\b/i,
-    /\bimmediately\b/i,
-    /\baction required\b/i,
-    /\blocked\b/i,
-    /\bsuspended\b/i,
-    /\bverify\b/i,
-    /\bconfirm\b/i,
-    /\bclaim\b/i,
-    /\bprize\b/i,
-    /\bwon\b/i,
-    /\bgift\b/i,
-  ];
-  const urgentHits = urgentPatterns.filter((r) => r.test(body)).length;
-  if (urgentHits >= 2) {
-    score += 12;
-    reasons.push(`Urgency/scarcity language (${urgentHits} indicators)`);
-  } else if (urgentHits === 1) {
-    score += 6;
-    reasons.push("Some urgency/scarcity language");
-  }
+  const urgentPats = [/\burgent\b/i,/\bimmediately\b/i,/\blocked\b/i,/\bsuspended\b/i,/\bverify\b/i,/\bconfirm\b/i,/\bclaim\b/i,/\bprize\b/i,/\bwon\b/i,/\bgift\b/i,/\bOTP\b/i,/\bbank\b/i];
+  const urgentHits = urgentPats.filter(r => r.test(body)).length;
+  if (urgentHits >= 3) { score += 18; reasons.push(`Multiple urgency/bait keywords (${urgentHits})`); }
+  else if (urgentHits >= 1) { score += 9; reasons.push(`Urgency/bait keywords (${urgentHits})`); }
 
-  // 3. Check for links (URLs) – smishing almost always includes a link
   const urlRegex = /\bhttps?:\/\/[^\s<>"')]+/gi;
   const urls = body.match(urlRegex) || [];
   if (urls.length > 0) {
-    score += 10;
-    reasons.push("Message contains a link (common in smishing)");
-
-    // Check for URL shorteners (very suspicious in SMS)
-    const shorteners = [
-      "bit.ly",
-      "tinyurl.com",
-      "t.co",
-      "goo.gl",
-      "rebrand.ly",
-      "ow.ly",
-      "is.gd",
-      "buff.ly",
-      "cutt.ly",
-      "shorturl.at",
-    ];
+    score += 10; reasons.push("Message contains a link");
+    const shorteners = ["bit.ly","tinyurl.com","t.co","goo.gl","rebrand.ly","ow.ly","is.gd","buff.ly","cutt.ly","shorturl.at"];
     for (const u of urls) {
       try {
         const url = new URL(u);
         const host = url.hostname.toLowerCase();
-        if (shorteners.some((s) => host.includes(s))) {
-          score += 12;
-          reasons.push(
-            `Link uses URL shortener (${host}) – highly suspicious in SMS`,
-          );
-          break;
-        }
+        if (shorteners.some(s => host.includes(s))) { score += 12; reasons.push(`URL shortener (${host}) in SMS`); break; }
       } catch (e) {}
     }
-  } else {
-    // No links – less likely smishing, but could still be a scam
-    score -= 5; // reduce score slightly
-    reasons.push("No links in message (less typical for smishing)");
-  }
+  } else { reasons.push("No links detected (less typical for smishing)"); }
 
-  // 4. Check for requests for personal info (passwords, SSN, etc.)
-  const sensitivePatterns = [
-    /\bpassword\b/i,
-    /\bssn\b/i,
-    /\bsocial security\b/i,
-    /\bcredit card\b/i,
-    /\bpin\b/i,
-    /\baccount number\b/i,
-    /\bverify your identity\b/i,
-    /\bupdate your information\b/i,
-    /\bclick here\b/i,
-  ];
-  const sensitiveHits = sensitivePatterns.filter((r) => r.test(body)).length;
-  if (sensitiveHits >= 2) {
-    score += 15;
-    reasons.push(
-      `Requests sensitive information (${sensitiveHits} indicators)`,
-    );
-  } else if (sensitiveHits === 1) {
-    score += 8;
-    reasons.push("Possible request for sensitive information");
-  }
+  const sensitivePats = [/\bpassword\b/i,/\bssn\b/i,/\bcredit card\b/i,/\bpin\b/i,/\baccount number\b/i,/\bclick here\b/i];
+  const sensitiveHits = sensitivePats.filter(r => r.test(body)).length;
+  if (sensitiveHits >= 2) { score += 15; reasons.push(`Sensitive info requested (${sensitiveHits})`); }
+  else if (sensitiveHits === 1) { score += 8; reasons.push("Possible sensitive info request"); }
 
-  // 5. Check for misspellings or odd grammar (common in smishing)
-  const misspellingPatterns = [
-    /\baccout\b/i,
-    /\bverifiy\b/i,
-    /\bconfrim\b/i,
-    /\brecieve\b/i,
-    /\bpaypal\b(?![a-z])/i,
-    /\bamazon\b(?![a-z])/i, // legitimate brand names but could be used in smishing
-  ];
-  const misspellHits = misspellingPatterns.filter((r) => r.test(body)).length;
-  if (misspellHits > 0) {
-    score += 8;
-    reasons.push("Possible misspellings or odd phrasing");
-  }
-
-  // 6. Check if sender appears to be a known brand but has slight variation
-  //    We don't have a full list, but we can check for common brand names in the sender field
-  const brandNames = [
-    "paypal",
-    "amazon",
-    "apple",
-    "google",
-    "microsoft",
-    "netflix",
-    "bank",
-    "irs",
-  ];
-  const senderLower = (sender || "").toLowerCase();
-  for (const brand of brandNames) {
-    if (
-      senderLower.includes(brand) &&
-      !senderLower.endsWith(".com") &&
-      senderLower !== brand
-    ) {
-      // e.g., "Paypa1", "Amaz0n"
-      score += 15;
-      reasons.push(`Sender impersonates "${brand}" with a variation`);
-      break;
-    }
-  }
-
-  // Normalize score (0-100)
   score = Math.min(100, Math.max(0, score));
-
-  // Label thresholds for smishing
-  let label, safeInc, riskInc;
-  if (score >= 60) {
-    label = "⚠ HIGH RISK – Smishing Indicators Strong";
-    riskInc = 1;
-    safeInc = 0;
-  } else if (score >= 30) {
-    label = "⚠ SUSPICIOUS – Potential SMS Scam";
-    riskInc = 1;
-    safeInc = 0;
-  } else {
-    label = "✅ SAFE – Low Risk of Smishing";
-    safeInc = 1;
-    riskInc = 0;
-  }
-
+  let label, safeInc = 0, riskInc = 0;
+  if (score >= 60) { label = "⚠ HIGH RISK – Smishing Indicators Strong"; riskInc = 1; }
+  else if (score >= 30) { label = "⚠ SUSPICIOUS – Potential SMS Scam"; riskInc = 1; }
+  else { label = "✅ SAFE – Low Risk of Smishing"; safeInc = 1; }
   return { score, reasons, label, safeInc, riskInc };
 }
 
-function displaySmishingResult(result) {
-  // Update dashboard counters
-  totalScans += 1;
-  safeCount += result.safeInc;
-  riskCount += result.riskInc;
+/* ================= VISHING CARD ================= */
 
-  animateCounter("totalScans", totalScans);
-  animateCounter("safeCountDisplay", safeCount);
-  animateCounter("riskCountDisplay", riskCount);
-
-  if (totalScans > 0) {
-    document.getElementById("noDataText").style.display = "none";
-  }
-
-  updateChart();
-  lastRiskStatus =
-    result.label.includes("HIGH RISK") ? "Phishing" :
-    result.label.includes("SUSPICIOUS") ? "Suspicious" : "Safe";
-  lastRiskLevelPercent = mapStatusToPercent(lastRiskStatus, result.score);
-  updateRiskUI();
-
-  // Show result message
-  const resultEl = document.getElementById("smsResult");
-  resultEl.innerHTML = `${result.label} (Score: ${result.score})<br><small>${result.reasons.join(" • ")}</small>`;
-  addLogEntry("sms://"+(document.getElementById("smsSender").value || "-"), lastRiskStatus, lastRiskLevelPercent);
-}
-
-// ================= VISHING CARD CLICK =================
-document.querySelectorAll('.card').forEach(card => {
-  if (card.textContent.trim() === 'Vishing') {
-    card.addEventListener('click', () => {
-      document.getElementById('scanner').style.display = 'none';
-      document.getElementById('emailScanner').style.display = 'none';
-      document.getElementById('spearScanner').style.display = 'none';
-      document.getElementById('whalingScanner').style.display = 'none';
-      document.getElementById('smishingScanner').style.display = 'none';
-      document.getElementById('vishingScanner').style.display = 'block';
+document.querySelectorAll(".card").forEach(card => {
+  if (card.textContent.trim() === "Vishing") {
+    card.addEventListener("click", () => {
+      hideAllScanners();
+      document.getElementById("vishingScanner").style.display = "block";
     });
   }
 });
 
-// Extend showUrlScanner to also hide vishing scanner
-const originalShowUrlScanner2 = window.showUrlScanner; // preserve previous if any
-window.showUrlScanner = function() {
-  document.getElementById('emailScanner').style.display = 'none';
-  document.getElementById('spearScanner').style.display = 'none';
-  document.getElementById('whalingScanner').style.display = 'none';
-  document.getElementById('smishingScanner').style.display = 'none';
-  document.getElementById('vishingScanner').style.display = 'none';
-  document.getElementById('scanner').style.display = 'block';
-  document.getElementById('emailProgressBar').style.width = '0%';
-  document.getElementById('spearProgressBar').style.width = '0%';
-  document.getElementById('whaleProgressBar').style.width = '0%';
-  document.getElementById('smsProgressBar').style.width = '0%';
-  document.getElementById('vishProgressBar').style.width = '0%';
-  document.getElementById('emailResult').innerHTML = '';
-  document.getElementById('spearResult').innerHTML = '';
-  document.getElementById('whaleResult').innerHTML = '';
-  document.getElementById('smsResult').innerHTML = '';
-  document.getElementById('vishResult').innerHTML = '';
-};
-
-// ================= VISHING SCAN =================
 function scanVishing() {
-  const callerId = document.getElementById('vishCallerId').value;
-  const claimedIdentity = document.getElementById('vishClaimedIdentity').value;
-  const callPurpose = document.getElementById('vishCallPurpose').value;
-  const details = document.getElementById('vishDetails').value;
-
-  animateCyberProgress('vishProgressBar', 'vishProgressPercent', function () {
+  const callerId = document.getElementById("vishCallerId").value.trim();
+  const claimedIdentity = document.getElementById("vishClaimedIdentity").value.trim();
+  const callPurpose = document.getElementById("vishCallPurpose").value.trim();
+  const details = document.getElementById("vishDetails").value.trim();
+  if (!claimedIdentity && !callPurpose && !details) { showInlineError("vishCallerId", "⚠ Please describe the call details."); return; }
+  animateCyberProgress("vishProgressBar", "vishProgressPercent", function () {
     const result = analyzeVishingContent(callerId, claimedIdentity, callPurpose, details);
-    displayVishingResult(result);
+    result.scanType = "Vishing";
+    displayGenericResult("vishResult", "call://" + (callerId || claimedIdentity || "-"), result);
   });
 }
 
 function analyzeVishingContent(callerId, claimedIdentity, callPurpose, details) {
   let score = 0;
   const reasons = [];
-  const fullText = (callPurpose + ' ' + details).toLowerCase();
+  const fullText = (callPurpose + " " + details).toLowerCase();
 
-  // 1. Check for suspicious caller ID (spoofed, international, hidden)
   if (callerId) {
-    const hasInternationalPrefix = /^\+|^00/.test(callerId);
-    if (hasInternationalPrefix) {
-      score += 10;
-      reasons.push('Caller ID shows international prefix (common in vishing)');
-    }
-    if (/unknown|blocked|private|restricted/i.test(callerId)) {
-      score += 12;
-      reasons.push('Caller ID is hidden/spoofed');
-    }
-  } else {
-    score += 5;
-    reasons.push('No caller ID provided');
-  }
+    if (/^\+|^00/.test(callerId)) { score += 10; reasons.push("International prefix — common in vishing"); }
+    if (/unknown|blocked|private|restricted/i.test(callerId)) { score += 12; reasons.push("Caller ID is hidden/spoofed"); }
+  } else { score += 5; reasons.push("No caller ID provided"); }
 
-  // 2. Check for impersonation of authority
-  const authorityList = [
-    'irs', 'tax', 'social security', 'ssa', 'fbi', 'police', 'sheriff',
-    'bank', 'credit union', 'paypal', 'amazon', 'apple', 'microsoft',
-    'utility', 'electric company', 'water company', 'tech support'
-  ];
-  const claimedLower = (claimedIdentity || '').toLowerCase();
+  const authorityList = ["irs","tax","social security","ssa","fbi","police","sheriff","bank","credit union","paypal","amazon","apple","microsoft","utility","tech support"];
+  const claimedLower = (claimedIdentity || "").toLowerCase();
   let impersonated = false;
   for (const auth of authorityList) {
-    if (claimedLower.includes(auth)) {
-      impersonated = true;
-      score += 15;
-      reasons.push(`Caller claims to be from ${auth} – high impersonation risk`);
-      break;
-    }
+    if (claimedLower.includes(auth)) { impersonated = true; score += 20; reasons.push(`Caller claims to be from "${auth}" — high risk`); break; }
   }
-  if (!impersonated && claimedIdentity) {
-    score += 5;
-    reasons.push('Caller claims an identity but not a recognized authority');
+  if (!impersonated && claimedIdentity) { score += 5; reasons.push("Caller claims an unrecognized identity"); }
+
+  const urgencyPats = [/\burgent\b/i,/\bimmediately\b/i,/\barrest\b/i,/\bwarrant\b/i,/\blawsuit\b/i,/\bdisconnect\b/i,/\bterminate\b/i,/\bvirus\b/i];
+  const urgencyHits = urgencyPats.filter(r => r.test(fullText)).length;
+  if (urgencyHits >= 2) { score += 15; reasons.push(`Urgency/threat language (${urgencyHits})`); }
+  else if (urgencyHits === 1) { score += 7; reasons.push("Some urgency/threat language"); }
+
+  const sensitivePats = [/\bsocial security\b/i,/\bssn\b/i,/\bcredit card\b/i,/\bbank account\b/i,/\bpin\b/i,/\bpassword\b/i,/\bgift card\b/i,/\bitunes card\b/i];
+  const sensitiveHits = sensitivePats.filter(r => r.test(fullText)).length;
+  if (sensitiveHits >= 2) { score += 20; reasons.push(`Sensitive info requested (${sensitiveHits})`); }
+  else if (sensitiveHits === 1) { score += 10; reasons.push("Possible sensitive info request"); }
+
+  const paymentPats = [/\bwire\b/i,/\btransfer\b/i,/\bgift card\b/i,/\bfine\b/i,/\btax\b/i,/\bbill\b/i];
+  const paymentHits = paymentPats.filter(r => r.test(fullText)).length;
+  if (paymentHits >= 2) { score += 15; reasons.push(`Payment demands (${paymentHits})`); }
+  else if (paymentHits === 1) { score += 7; reasons.push("Possible payment demand"); }
+
+  const lurePats = ["suspended","locked","compromised","fraud","virus","refund","prize","won","lottery"];
+  for (const lure of lurePats) {
+    if (fullText.includes(lure)) { score += 8; reasons.push(`Call purpose mentions "${lure}" — common lure`); break; }
   }
 
-  // 3. Check for urgency/threats
-  const urgencyPatterns = [
-    /\burgent\b/i, /\bimmediately\b/i, /\baction required\b/i,
-    /\barrest\b/i, /\bwarrant\b/i, /\blawsuit\b/i, /\bsue\b/i,
-    /\bdisconnect\b/i, /\bshut off\b/i, /\bterminate\b/i,
-    /\byour account.*suspended\b/i, /\byour computer.*virus\b/i
-  ];
-  const urgencyHits = urgencyPatterns.filter(r => r.test(fullText)).length;
-  if (urgencyHits >= 2) {
-    score += 15;
-    reasons.push(`Urgency/threat language (${urgencyHits} indicators)`);
-  } else if (urgencyHits === 1) {
-    score += 7;
-    reasons.push('Some urgency/threat language');
-  }
-
-  // 4. Check for requests for sensitive information
-  const sensitivePatterns = [
-    /\bsocial security\b/i, /\bssn\b/i, /\bcredit card\b/i,
-    /\bbank account\b/i, /\brouting number\b/i, /\bpin\b/i,
-    /\bpassword\b/i, /\bverify your identity\b/i, /\bconfirm your details\b/i,
-    /\bgift card\b/i, /\bitunes card\b/i, /\bgoogle play card\b/i
-  ];
-  const sensitiveHits = sensitivePatterns.filter(r => r.test(fullText)).length;
-  if (sensitiveHits >= 2) {
-    score += 20;
-    reasons.push(`Requests sensitive information (${sensitiveHits} indicators)`);
-  } else if (sensitiveHits === 1) {
-    score += 10;
-    reasons.push('Possible request for sensitive information');
-  }
-
-  // 5. Check for payment demands
-  const paymentPatterns = [
-    /\bpay\b/i, /\bwire\b/i, /\btransfer\b/i, /\bmoney\b/i,
-    /\bfine\b/i, /\bfee\b/i, /\btax\b/i, /\bbill\b/i,
-    /\bitunes card\b/i, /\bgoogle play card\b/i, /\bgift card\b/i
-  ];
-  const paymentHits = paymentPatterns.filter(r => r.test(fullText)).length;
-  if (paymentHits >= 2) {
-    score += 15;
-    reasons.push(`Payment demands (${paymentHits} indicators)`);
-  } else if (paymentHits === 1) {
-    score += 7;
-    reasons.push('Possible payment demand');
-  }
-
-  // 6. Check for common vishing lures in call purpose
-  const commonLures = [
-    'suspended', 'locked', 'compromised', 'fraud', 'virus', 'infected',
-    'refund', 'prize', 'won', 'lottery', 'inheritance', 'relative in trouble'
-  ];
-  const purposeLower = (callPurpose || '').toLowerCase();
-  for (const lure of commonLures) {
-    if (purposeLower.includes(lure)) {
-      score += 8;
-      reasons.push(`Call purpose "${lure}" is a common vishing lure`);
-      break;
-    }
-  }
-
-  // Normalize score (0-100)
   score = Math.min(100, Math.max(0, score));
-
-  // Label thresholds for vishing
-  let label, safeInc, riskInc;
-  if (score >= 65) {
-    label = '⚠ HIGH RISK – Vishing Indicators Strong';
-    riskInc = 1;
-    safeInc = 0;
-  } else if (score >= 35) {
-    label = '⚠ SUSPICIOUS – Potential Voice Scam';
-    riskInc = 1;
-    safeInc = 0;
-  } else {
-    label = '✅ SAFE – Low Risk of Vishing';
-    safeInc = 1;
-    riskInc = 0;
-  }
-
+  let label, safeInc = 0, riskInc = 0;
+  if (score >= 65) { label = "⚠ HIGH RISK – Vishing Indicators Strong"; riskInc = 1; }
+  else if (score >= 35) { label = "⚠ SUSPICIOUS – Potential Voice Scam"; riskInc = 1; }
+  else { label = "✅ SAFE – Low Risk of Vishing"; safeInc = 1; }
   return { score, reasons, label, safeInc, riskInc };
 }
 
-function displayVishingResult(result) {
-  // Update dashboard counters
-  totalScans += 1;
-  safeCount += result.safeInc;
-  riskCount += result.riskInc;
+/* ================= CLONE PHISHING CARD ================= */
 
-  document.getElementById('totalScans').innerText = totalScans;
-  document.getElementById('safeCountDisplay').innerText = safeCount;
-  document.getElementById('riskCountDisplay').innerText = riskCount;
-
-  if (totalScans > 0) {
-    document.getElementById('noDataText').style.display = 'none';
-  }
-
-  updateChart();
-
-  // Show result message
-  const resultEl = document.getElementById('vishResult');
-  resultEl.innerHTML = `${result.label} (Score: ${result.score})<br><small>${result.reasons.join(' • ')}</small>`;
-}
-
-// ================= CLONE PHISHING CARD CLICK =================
-document.querySelectorAll('.card').forEach(card => {
-  if (card.textContent.trim() === 'Clone Phishing') {
-    card.addEventListener('click', () => {
-      document.getElementById('scanner').style.display = 'none';
-      document.getElementById('emailScanner').style.display = 'none';
-      document.getElementById('spearScanner').style.display = 'none';
-      document.getElementById('whalingScanner').style.display = 'none';
-      document.getElementById('smishingScanner').style.display = 'none';
-      document.getElementById('vishingScanner').style.display = 'none';
-      document.getElementById('cloneScanner').style.display = 'block';
+document.querySelectorAll(".card").forEach(card => {
+  if (card.textContent.trim() === "Clone Phishing") {
+    card.addEventListener("click", () => {
+      hideAllScanners();
+      document.getElementById("cloneScanner").style.display = "block";
     });
   }
 });
 
-// Extend showUrlScanner to also hide clone scanner
-window.showUrlScanner = function() {
-  document.getElementById('emailScanner').style.display = 'none';
-  document.getElementById('spearScanner').style.display = 'none';
-  document.getElementById('whalingScanner').style.display = 'none';
-  document.getElementById('smishingScanner').style.display = 'none';
-  document.getElementById('vishingScanner').style.display = 'none';
-  document.getElementById('cloneScanner').style.display = 'none';
-  document.getElementById('scanner').style.display = 'block';
-  document.getElementById('emailProgressBar').style.width = '0%';
-  document.getElementById('spearProgressBar').style.width = '0%';
-  document.getElementById('whaleProgressBar').style.width = '0%';
-  document.getElementById('smsProgressBar').style.width = '0%';
-  document.getElementById('vishProgressBar').style.width = '0%';
-  document.getElementById('cloneProgressBar').style.width = '0%';
-  document.getElementById('emailResult').innerHTML = '';
-  document.getElementById('spearResult').innerHTML = '';
-  document.getElementById('whaleResult').innerHTML = '';
-  document.getElementById('smsResult').innerHTML = '';
-  document.getElementById('vishResult').innerHTML = '';
-  document.getElementById('cloneResult').innerHTML = '';
-};
-
-// ================= CLONE PHISHING SCAN =================
 function scanClone() {
-  const from = document.getElementById('cloneFrom').value;
-  const subject = document.getElementById('cloneSubject').value;
-  const body = document.getElementById('cloneBody').value;
-
-  animateCyberProgress('cloneProgressBar', 'cloneProgressPercent', function () {
+  const from = document.getElementById("cloneFrom").value.trim();
+  const subject = document.getElementById("cloneSubject").value.trim();
+  const body = document.getElementById("cloneBody").value.trim();
+  if (!from && !body) { showInlineError("cloneFrom", "⚠ Please fill in the sender and body."); return; }
+  animateCyberProgress("cloneProgressBar", "cloneProgressPercent", function () {
     const result = analyzeCloneContent(from, subject, body);
-    displayCloneResult(result);
+    result.scanType = "Clone Phishing";
+    displayGenericResult("cloneResult", "clone://" + (normalizeEmail(from)?.domain || from || "-"), result);
   });
 }
 
 function analyzeCloneContent(from, subject, body) {
   let score = 0;
   const reasons = [];
-  const fullText = (subject + ' ' + body).toLowerCase();
+  const fullText = (subject + " " + body).toLowerCase();
 
-  // 1. Parse sender (same as before)
   const fromParsed = normalizeEmail(from);
-  if (!fromParsed) {
-    score += 15;
-    reasons.push('Invalid or missing From address');
-  } else {
-    // Brand impersonation
+  if (!fromParsed) { score += 15; reasons.push("Invalid or missing From address"); }
+  else {
     const fromBase = getBaseDomain(fromParsed.domain);
     for (const brand of HIGH_VALUE_BRANDS) {
       const brandBase = getBaseDomain(brand);
       const sim = tokenSimilarity(fromBase, brandBase);
-      if (sim > 0.55 && fromBase !== brandBase) {
-        score += 20;
-        reasons.push(`From domain looks like ${brandBase} but is actually ${fromBase}`);
-        break;
-      }
+      if (sim > 0.55 && fromBase !== brandBase) { score += 20; reasons.push(`From domain mimics ${brandBase}`); break; }
     }
-    // Suspicious TLD
-    const tld = fromParsed.domain.split('.').pop();
-    const suspiciousTLDs = ['zip', 'mov', 'top', 'xyz', 'click', 'country', 'kim', 'gq', 'tk', 'cf'];
-    if (suspiciousTLDs.includes(tld)) {
-      score += 8;
-      reasons.push(`From domain uses risky TLD .${tld}`);
-    }
+    const tld = fromParsed.domain.split(".").pop();
+    if (["zip","mov","top","xyz","click","country","kim","gq","tk","cf"].includes(tld)) { score += 8; reasons.push(`Risky TLD .${tld}`); }
   }
 
-  // 2. Check for reply/forward indicators (key for clone phishing)
-  const replyIndicators = [
-    /^re:/i, /^fwd:/i, /^fw:/i,            // subject prefixes
-    />.*wrote:/i,                           // quoted text marker
-    /on.*wrote:/i,                           // "On [date] wrote:"
-    /---original message---/i,
-    /from:.*sent:/i
-  ];
-  let replyHits = 0;
-  for (const pattern of replyIndicators) {
-    if (pattern.test(subject) || pattern.test(body)) {
-      replyHits++;
-    }
-  }
-  if (replyHits >= 1) {
-    score += 15;
-    reasons.push('Email contains reply/forward indicators (common in clone phishing)');
-  } else {
-    // No reply indicators – less likely clone, but still possible
-    reasons.push('No obvious reply/forward markers');
-  }
+  const replyIndicators = [/^re:/i,/^fwd:/i,/^fw:/i,/>.*wrote:/i,/on.*wrote:/i,/---original message---/i,/from:.*sent:/i];
+  if (replyIndicators.some(p => p.test(subject) || p.test(body))) { score += 15; reasons.push("Reply/forward markers (clone indicator)"); }
+  else { reasons.push("No reply/forward markers detected"); }
 
-  // 3. Check for presence of links (cloned emails often replace original links with malicious ones)
   const urlRegex = /\bhttps?:\/\/[^\s<>"')]+/gi;
   const urls = body.match(urlRegex) || [];
   if (urls.length > 0) {
-    score += 10;
-    reasons.push(`Email contains ${urls.length} link(s) – verify they are legitimate`);
-
-    // Check for mismatched domains vs sender
+    score += 10; reasons.push(`Contains ${urls.length} link(s) — verify authenticity`);
     for (const u of urls) {
       try {
         const url = new URL(u);
-        const host = url.hostname.toLowerCase();
-        const base = getBaseDomain(host);
-        if (fromParsed && base && getBaseDomain(fromParsed.domain) !== base) {
-          score += 8;
-          reasons.push(`Link domain (${base}) differs from sender domain`);
-          break;
-        }
+        const base = getBaseDomain(url.hostname.toLowerCase());
+        if (fromParsed && base && getBaseDomain(fromParsed.domain) !== base) { score += 8; reasons.push(`Link domain (${base}) differs from sender`); break; }
       } catch (e) {}
     }
-  } else {
-    reasons.push('No links found – less typical for clone phishing');
+  } else { reasons.push("No links found"); }
+
+  if (/\battach/i.test(fullText)) { score += 8; reasons.push("Attachment mentioned"); }
+
+  const urgentPats = [/\burgent\b/i,/\bimmediately\b/i,/\bverify\b/i,/\bupdate\b/i,/\bsecurity\b/i];
+  const urgentHits = urgentPats.filter(r => r.test(fullText)).length;
+  if (urgentHits >= 2) { score += 10; reasons.push(`Urgency language (${urgentHits})`); }
+  else if (urgentHits === 1) { score += 5; reasons.push("Some urgency language"); }
+
+  // Slight URL variation patterns (clone phishing hallmark)
+  for (const u of urls) {
+    try {
+      const parsed = new URL(u);
+      const host = parsed.hostname.toLowerCase();
+      for (const brand of HIGH_VALUE_BRANDS) {
+        const brandBase = getBaseDomain(brand);
+        const sim = tokenSimilarity(getBaseDomain(host), brandBase);
+        if (sim > 0.4 && sim < 1 && getBaseDomain(host) !== brandBase) {
+          score += 12; reasons.push(`Link URL resembles ${brandBase} with slight variation`); break;
+        }
+      }
+    } catch (e) {}
   }
 
-  // 4. Check for attachment mentions
-  if (/\battach\b/i.test(fullText) || /\battachment\b/i.test(fullText)) {
-    score += 8;
-    reasons.push('Email mentions an attachment – could be malicious');
-  }
-
-  // 5. Urgency keywords (common in phishing)
-  const urgentPatterns = [
-    /\burgent\b/i, /\bimmediately\b/i, /\baction required\b/i,
-    /\bverify\b/i, /\bupdate\b/i, /\bsecurity\b/i
-  ];
-  const urgentHits = urgentPatterns.filter(r => r.test(fullText)).length;
-  if (urgentHits >= 2) {
-    score += 10;
-    reasons.push(`Urgency language (${urgentHits} indicators)`);
-  } else if (urgentHits === 1) {
-    score += 5;
-    reasons.push('Some urgency language');
-  }
-
-  // Normalize score (0-100)
   score = Math.min(100, Math.max(0, score));
-
-  // Label thresholds for clone phishing
-  let label, safeInc, riskInc;
-  if (score >= 60) {
-    label = '⚠ HIGH RISK – Clone Phishing Indicators Strong';
-    riskInc = 1;
-    safeInc = 0;
-  } else if (score >= 30) {
-    label = '⚠ SUSPICIOUS – Potential Clone Email';
-    riskInc = 1;
-    safeInc = 0;
-  } else {
-    label = '✅ SAFE – Low Risk of Clone Phishing';
-    safeInc = 1;
-    riskInc = 0;
-  }
-
+  let label, safeInc = 0, riskInc = 0;
+  if (score >= 60) { label = "⚠ HIGH RISK – Clone Phishing Indicators Strong"; riskInc = 1; }
+  else if (score >= 30) { label = "⚠ SUSPICIOUS – Potential Clone Email"; riskInc = 1; }
+  else { label = "✅ SAFE – Low Risk of Clone Phishing"; safeInc = 1; }
   return { score, reasons, label, safeInc, riskInc };
 }
 
-function displayCloneResult(result) {
-  // Update dashboard counters
-  totalScans += 1;
-  safeCount += result.safeInc;
-  riskCount += result.riskInc;
+/* ================= QUISHING CARD ================= */
 
-  document.getElementById('totalScans').innerText = totalScans;
-  document.getElementById('safeCountDisplay').innerText = safeCount;
-  document.getElementById('riskCountDisplay').innerText = riskCount;
-
-  if (totalScans > 0) {
-    document.getElementById('noDataText').style.display = 'none';
-  }
-
-  updateChart();
-
-  // Show result message
-  const resultEl = document.getElementById('cloneResult');
-  resultEl.innerHTML = `${result.label} (Score: ${result.score})<br><small>${result.reasons.join(' • ')}</small>`;
-}
-
-// ================= QUISHING CARD CLICK =================
-document.querySelectorAll('.card').forEach(card => {
-  if (card.textContent.trim() === 'Quishing') {
-    card.addEventListener('click', () => {
-      document.getElementById('scanner').style.display = 'none';
-      document.getElementById('emailScanner').style.display = 'none';
-      document.getElementById('spearScanner').style.display = 'none';
-      document.getElementById('whalingScanner').style.display = 'none';
-      document.getElementById('smishingScanner').style.display = 'none';
-      document.getElementById('vishingScanner').style.display = 'none';
-      document.getElementById('cloneScanner').style.display = 'none';
-      document.getElementById('quishingScanner').style.display = 'block';
+document.querySelectorAll(".card").forEach(card => {
+  if (card.textContent.trim() === "Quishing") {
+    card.addEventListener("click", () => {
+      hideAllScanners();
+      document.getElementById("quishingScanner").style.display = "block";
     });
   }
 });
 
-// Extend showUrlScanner to also hide quishing scanner
-window.showUrlScanner = function() {
-  document.getElementById('emailScanner').style.display = 'none';
-  document.getElementById('spearScanner').style.display = 'none';
-  document.getElementById('whalingScanner').style.display = 'none';
-  document.getElementById('smishingScanner').style.display = 'none';
-  document.getElementById('vishingScanner').style.display = 'none';
-  document.getElementById('cloneScanner').style.display = 'none';
-  document.getElementById('quishingScanner').style.display = 'none';
-  document.getElementById('scanner').style.display = 'block';
-  document.getElementById('emailProgressBar').style.width = '0%';
-  document.getElementById('spearProgressBar').style.width = '0%';
-  document.getElementById('whaleProgressBar').style.width = '0%';
-  document.getElementById('smsProgressBar').style.width = '0%';
-  document.getElementById('vishProgressBar').style.width = '0%';
-  document.getElementById('cloneProgressBar').style.width = '0%';
-  document.getElementById('quishProgressBar').style.width = '0%';
-  document.getElementById('emailResult').innerHTML = '';
-  document.getElementById('spearResult').innerHTML = '';
-  document.getElementById('whaleResult').innerHTML = '';
-  document.getElementById('smsResult').innerHTML = '';
-  document.getElementById('vishResult').innerHTML = '';
-  document.getElementById('cloneResult').innerHTML = '';
-  document.getElementById('quishResult').innerHTML = '';
-};
-
-// ================= QUISHING SCAN =================
 function scanQuishing() {
-  const from = document.getElementById('quishFrom').value;
-  const subject = document.getElementById('quishSubject').value;
-  const body = document.getElementById('quishBody').value;
-
-  animateCyberProgress('quishProgressBar', 'quishProgressPercent', function () {
+  const from = document.getElementById("quishFrom").value.trim();
+  const subject = document.getElementById("quishSubject").value.trim();
+  const body = document.getElementById("quishBody").value.trim();
+  if (!body && !subject) { showInlineError("quishBody", "⚠ Please enter the message or email content."); return; }
+  animateCyberProgress("quishProgressBar", "quishProgressPercent", function () {
     const result = analyzeQuishingContent(from, subject, body);
-    displayQuishingResult(result);
+    result.scanType = "Quishing";
+    displayGenericResult("quishResult", "quish://" + (normalizeEmail(from)?.domain || from || "-"), result);
   });
 }
 
 function analyzeQuishingContent(from, subject, body) {
   let score = 0;
   const reasons = [];
-  const fullText = (subject + ' ' + body).toLowerCase();
+  const fullText = (subject + " " + body).toLowerCase();
 
-  // 1. QR code references (key indicator)
-  const qrPatterns = [
-    /\bqr\b/i,
-    /\bqr code\b/i,
-    /\bscan\s*(?:the\s*)?code\b/i,
-    /\bscan\s*(?:the\s*)?qr\b/i,
-    /\buse your camera\b/i,
-    /\bscan to\b/i
-  ];
-  const qrHits = qrPatterns.filter(p => p.test(fullText)).length;
-  if (qrHits >= 2) {
-    score += 25;
-    reasons.push(`Multiple QR code references (${qrHits} indicators) – high quishing risk`);
-  } else if (qrHits === 1) {
-    score += 15;
-    reasons.push('Contains QR code reference – verify the source');
-  }
+  // QR code references — key indicator
+  const qrPats = [/\bqr\b/i,/\bqr code\b/i,/\bscan\s*(?:the\s*)?(?:code|qr)\b/i,/\buse your camera\b/i,/\bscan to\b/i];
+  const qrHits = qrPats.filter(p => p.test(fullText)).length;
+  if (qrHits >= 2) { score += 30; reasons.push(`Multiple QR code references (${qrHits}) — high quishing risk`); }
+  else if (qrHits === 1) { score += 15; reasons.push("Contains QR code reference — verify source before scanning"); }
+  else { reasons.push("No QR code reference detected — if a QR was in an image, check the URL manually"); }
 
-  // 2. Check for links (QR codes often lead to malicious URLs)
-  const urlRegex = /\bhttps?:\/\/[^\s<>"')]+/gi;
-  const urls = body.match(urlRegex) || [];
-  if (urls.length > 0) {
-    score += 10;
-    reasons.push(`Contains ${urls.length} link(s) – could be behind QR`);
-
-    // Check for URL shorteners (common in quishing)
-    const shorteners = ['bit.ly', 'tinyurl.com', 't.co', 'goo.gl', 'rebrand.ly', 'ow.ly', 'is.gd', 'buff.ly', 'cutt.ly', 'shorturl.at'];
-    for (const u of urls) {
-      try {
-        const url = new URL(u);
-        const host = url.hostname.toLowerCase();
-        if (shorteners.some(s => host.includes(s))) {
-          score += 12;
-          reasons.push(`Link uses URL shortener (${host}) – hides destination`);
-          break;
-        }
-      } catch (e) {}
-    }
-  }
-
-  // 3. Sender analysis (impersonation)
   const fromParsed = normalizeEmail(from);
-  if (!fromParsed) {
-    score += 15;
-    reasons.push('Invalid or missing From address');
-  } else {
+  if (!fromParsed && from) { score += 15; reasons.push("Invalid From address"); }
+  else if (fromParsed) {
     const fromBase = getBaseDomain(fromParsed.domain);
-    // Brand impersonation
     for (const brand of HIGH_VALUE_BRANDS) {
       const brandBase = getBaseDomain(brand);
       const sim = tokenSimilarity(fromBase, brandBase);
-      if (sim > 0.55 && fromBase !== brandBase) {
-        score += 20;
-        reasons.push(`From domain looks like ${brandBase} but is actually ${fromBase}`);
-        break;
-      }
-    }
-    // Suspicious TLD
-    const tld = fromParsed.domain.split('.').pop();
-    const suspiciousTLDs = ['zip', 'mov', 'top', 'xyz', 'click', 'country', 'kim', 'gq', 'tk', 'cf'];
-    if (suspiciousTLDs.includes(tld)) {
-      score += 8;
-      reasons.push(`From domain uses risky TLD .${tld}`);
+      if (sim > 0.55 && fromBase !== brandBase) { score += 20; reasons.push(`From domain mimics ${brandBase}`); break; }
     }
   }
 
-  // 4. Urgency keywords
-  const urgentPatterns = [
-    /\burgent\b/i, /\bimmediately\b/i, /\baction required\b/i,
-    /\bverify\b/i, /\bupdate\b/i, /\bsecurity alert\b/i
-  ];
-  const urgentHits = urgentPatterns.filter(r => r.test(fullText)).length;
-  if (urgentHits >= 2) {
-    score += 12;
-    reasons.push(`Urgency language (${urgentHits} indicators)`);
-  } else if (urgentHits === 1) {
-    score += 6;
-    reasons.push('Some urgency language');
-  }
-
-  // 5. Payment/invoice keywords
-  const payPatterns = [
-    /\binvoice\b/i, /\bpayment\b/i, /\bwire\b/i, /\btransfer\b/i,
-    /\bgift card\b/i, /\bcrypto\b/i, /\bbitcoin\b/i
-  ];
-  const payHits = payPatterns.filter(r => r.test(fullText)).length;
-  if (payHits >= 2) {
-    score += 10;
-    reasons.push(`Payment/invoice language (${payHits} indicators)`);
-  } else if (payHits === 1) {
-    score += 5;
-    reasons.push('Possible payment reference');
-  }
-
-  // 6. Check for mismatched domain between sender and any links
-  if (fromParsed && urls.length > 0) {
+  const urlRegex = /\bhttps?:\/\/[^\s<>"')]+/gi;
+  const urls = body.match(urlRegex) || [];
+  if (urls.length > 0) {
+    score += 10; reasons.push(`${urls.length} link(s) found — could be QR destination`);
+    const shorteners = ["bit.ly","tinyurl.com","t.co","goo.gl","rebrand.ly","ow.ly","is.gd"];
     for (const u of urls) {
       try {
         const url = new URL(u);
         const host = url.hostname.toLowerCase();
-        const base = getBaseDomain(host);
-        if (base && getBaseDomain(fromParsed.domain) !== base) {
-          score += 8;
-          reasons.push(`Link domain (${base}) differs from sender domain`);
-          break;
-        }
+        if (shorteners.some(s => host.includes(s))) { score += 12; reasons.push(`URL shortener (${host}) hides QR destination`); break; }
       } catch (e) {}
     }
   }
 
-  // Normalize score (0-100)
+  const urgentPats = [/\burgent\b/i,/\bimmediately\b/i,/\bverify\b/i,/\bsecurity alert\b/i];
+  const urgentHits = urgentPats.filter(r => r.test(fullText)).length;
+  if (urgentHits >= 2) { score += 12; reasons.push(`Urgency language (${urgentHits})`); }
+  else if (urgentHits === 1) { score += 6; reasons.push("Some urgency language"); }
+
   score = Math.min(100, Math.max(0, score));
-
-  // Label thresholds for quishing
-  let label, safeInc, riskInc;
-  if (score >= 60) {
-    label = '⚠ HIGH RISK – Quishing Indicators Strong';
-    riskInc = 1;
-    safeInc = 0;
-  } else if (score >= 30) {
-    label = '⚠ SUSPICIOUS – Potential QR Code Scam';
-    riskInc = 1;
-    safeInc = 0;
-  } else {
-    label = '✅ SAFE – Low Risk of Quishing';
-    safeInc = 1;
-    riskInc = 0;
-  }
-
+  let label, safeInc = 0, riskInc = 0;
+  if (score >= 60) { label = "⚠ HIGH RISK – Quishing Indicators Strong"; riskInc = 1; }
+  else if (score >= 30) { label = "⚠ SUSPICIOUS – Potential QR Code Scam"; riskInc = 1; }
+  else { label = "✅ SAFE – Low Risk of Quishing"; safeInc = 1; }
   return { score, reasons, label, safeInc, riskInc };
 }
 
-function displayQuishingResult(result) {
-  // Update dashboard counters
-  totalScans += 1;
-  safeCount += result.safeInc;
-  riskCount += result.riskInc;
+/* ================= ANGLER PHISHING CARD ================= */
 
-  document.getElementById('totalScans').innerText = totalScans;
-  document.getElementById('safeCountDisplay').innerText = safeCount;
-  document.getElementById('riskCountDisplay').innerText = riskCount;
-
-  if (totalScans > 0) {
-    document.getElementById('noDataText').style.display = 'none';
-  }
-
-  updateChart();
-
-  // Show result message
-  const resultEl = document.getElementById('quishResult');
-  resultEl.innerHTML = `${result.label} (Score: ${result.score})<br><small>${result.reasons.join(' • ')}</small>`;
-}
-
-// ================= ANGLER PHISHING CARD CLICK =================
-document.querySelectorAll('.card').forEach(card => {
-  if (card.textContent.trim() === 'Angler Phishing') {
-    card.addEventListener('click', () => {
-      document.getElementById('scanner').style.display = 'none';
-      document.getElementById('emailScanner').style.display = 'none';
-      document.getElementById('spearScanner').style.display = 'none';
-      document.getElementById('whalingScanner').style.display = 'none';
-      document.getElementById('smishingScanner').style.display = 'none';
-      document.getElementById('vishingScanner').style.display = 'none';
-      document.getElementById('cloneScanner').style.display = 'none';
-      document.getElementById('quishingScanner').style.display = 'none';
-      document.getElementById('anglerScanner').style.display = 'block';
+document.querySelectorAll(".card").forEach(card => {
+  if (card.textContent.trim() === "Angler Phishing") {
+    card.addEventListener("click", () => {
+      hideAllScanners();
+      document.getElementById("anglerScanner").style.display = "block";
     });
   }
 });
 
-// Extend showUrlScanner to also hide angler scanner
-window.showUrlScanner = function() {
-  document.getElementById('emailScanner').style.display = 'none';
-  document.getElementById('spearScanner').style.display = 'none';
-  document.getElementById('whalingScanner').style.display = 'none';
-  document.getElementById('smishingScanner').style.display = 'none';
-  document.getElementById('vishingScanner').style.display = 'none';
-  document.getElementById('cloneScanner').style.display = 'none';
-  document.getElementById('quishingScanner').style.display = 'none';
-  document.getElementById('anglerScanner').style.display = 'none';
-  document.getElementById('scanner').style.display = 'block';
-  document.getElementById('emailProgressBar').style.width = '0%';
-  document.getElementById('spearProgressBar').style.width = '0%';
-  document.getElementById('whaleProgressBar').style.width = '0%';
-  document.getElementById('smsProgressBar').style.width = '0%';
-  document.getElementById('vishProgressBar').style.width = '0%';
-  document.getElementById('cloneProgressBar').style.width = '0%';
-  document.getElementById('quishProgressBar').style.width = '0%';
-  document.getElementById('anglerProgressBar').style.width = '0%';
-  document.getElementById('emailResult').innerHTML = '';
-  document.getElementById('spearResult').innerHTML = '';
-  document.getElementById('whaleResult').innerHTML = '';
-  document.getElementById('smsResult').innerHTML = '';
-  document.getElementById('vishResult').innerHTML = '';
-  document.getElementById('cloneResult').innerHTML = '';
-  document.getElementById('quishResult').innerHTML = '';
-  document.getElementById('anglerResult').innerHTML = '';
-};
-
-// ================= ANGLER PHISHING SCAN =================
 function scanAngler() {
-  const platform = document.getElementById('anglerPlatform').value;
-  const handle = document.getElementById('anglerHandle').value;
-  const claim = document.getElementById('anglerClaim').value;
-  const message = document.getElementById('anglerMessage').value;
-
-  animateCyberProgress('anglerProgressBar', 'anglerProgressPercent', function () {
+  const platform = document.getElementById("anglerPlatform").value;
+  const handle = document.getElementById("anglerHandle").value.trim();
+  const claim = document.getElementById("anglerClaim").value.trim();
+  const message = document.getElementById("anglerMessage").value.trim();
+  if (!message && !handle) { showInlineError("anglerHandle", "⚠ Please fill in the handle and message."); return; }
+  animateCyberProgress("anglerProgressBar", "anglerProgressPercent", function () {
     const result = analyzeAnglerContent(platform, handle, claim, message);
-    displayAnglerResult(result);
+    result.scanType = "Angler Phishing";
+    displayGenericResult("anglerResult", "social://" + (platform || "unknown") + "/" + (handle || "-"), result);
   });
 }
 
 function analyzeAnglerContent(platform, handle, claim, message) {
   let score = 0;
   const reasons = [];
-  const fullText = (claim + ' ' + message).toLowerCase();
+  const fullText = (claim + " " + message).toLowerCase();
 
-  // 1. Check for platform selection
-  if (!platform) {
-    score += 5;
-    reasons.push('No platform selected');
-  }
+  if (!platform) { score += 5; reasons.push("No platform selected"); }
 
-  // 2. Analyze handle for impersonation patterns
-  const claimLower = claim.toLowerCase();
-  const handleLower = handle.toLowerCase();
-  const knownBrands = ['amazon', 'paypal', 'apple', 'google', 'microsoft', 'netflix', 'bank', 'support', 'customer service'];
-
-  // Check if handle contains brand names but might be suspicious
-  for (const brand of knownBrands) {
-    if (handleLower.includes(brand)) {
-      // Check if it's an exact match or common impersonation
-      if (handleLower === brand || handleLower === brand + 'support' || handleLower === 'support' + brand) {
-        // Could be legitimate, but still possible fake
-        reasons.push(`Handle appears to be ${brand}`);
-      } else {
-        // Likely impersonation (e.g., @amaz0n_support)
-        score += 20;
-        reasons.push(`Handle "${handle}" looks like impersonation of ${brand}`);
-        break;
-      }
+  // Platform-specific fake handle patterns
+  const platformPatterns = {
+    twitter:   [/^@?(?:twitter|twtr|tw1tter)/i],
+    facebook:  [/^@?(?:facebook|faceb00k|fb_support)/i],
+    instagram: [/^@?(?:instagram|insta_gram|ig_support)/i],
+    linkedin:  [/^@?(?:linkedin|linked_in|li_support)/i],
+    tiktok:    [/^@?(?:tiktok|tik_tok|tt_support)/i],
+  };
+  if (platform && platformPatterns[platform]) {
+    if (platformPatterns[platform].some(p => p.test(handle))) {
+      score += 15; reasons.push(`Handle mimics official ${platform} account`);
     }
   }
 
-  // 3. Check for urgency in message
-  const urgencyPatterns = [
-    /\burgent\b/i, /\bimmediately\b/i, /\bproblem\b/i, /\bissue\b/i,
-    /\blocked\b/i, /\bsuspended\b/i, /\bunauthorized\b/i, /\bsecurity breach\b/i
-  ];
-  const urgencyHits = urgencyPatterns.filter(r => r.test(message)).length;
-  if (urgencyHits >= 2) {
-    score += 12;
-    reasons.push(`Urgency/problem language (${urgencyHits} indicators)`);
-  } else if (urgencyHits === 1) {
-    score += 6;
-    reasons.push('Some urgency/problem language');
+  const knownBrands = ["amazon","paypal","apple","google","microsoft","netflix","support","customer service","help"];
+  const handleLower = handle.toLowerCase();
+  for (const brand of knownBrands) {
+    if (handleLower.includes(brand) && handleLower !== brand) {
+      score += 20; reasons.push(`Handle "${handle}" impersonates "${brand}"`); break;
+    }
   }
 
-  // 4. Requests for sensitive information
-  const sensitivePatterns = [
-    /\bpassword\b/i, /\bssn\b/i, /\bcredit card\b/i, /\bpin\b/i,
-    /\bverify your account\b/i, /\bconfirm your identity\b/i,
-    /\blogin\b/i, /\bsign in\b/i, /\bclick here\b/i
-  ];
-  const sensitiveHits = sensitivePatterns.filter(r => r.test(message)).length;
-  if (sensitiveHits >= 2) {
-    score += 18;
-    reasons.push(`Requests sensitive information (${sensitiveHits} indicators)`);
-  } else if (sensitiveHits === 1) {
-    score += 10;
-    reasons.push('Possible request for sensitive info');
+  // Urgency
+  const urgencyPats = [/\burgent\b/i,/\bproblem\b/i,/\blocked\b/i,/\bsuspended\b/i,/\bunauthorized\b/i,/\bsecurity breach\b/i];
+  const urgencyHits = urgencyPats.filter(r => r.test(message)).length;
+  if (urgencyHits >= 2) { score += 12; reasons.push(`Urgency language (${urgencyHits})`); }
+  else if (urgencyHits === 1) { score += 6; reasons.push("Some urgency language"); }
+
+  // Sensitive requests
+  const sensitivePats = [/\bpassword\b/i,/\bcredit card\b/i,/\bpin\b/i,/\bverify your account\b/i,/\bsign in\b/i,/\bclick here\b/i];
+  const sensitiveHits = sensitivePats.filter(r => r.test(message)).length;
+  if (sensitiveHits >= 2) { score += 18; reasons.push(`Sensitive info requested (${sensitiveHits})`); }
+  else if (sensitiveHits === 1) { score += 10; reasons.push("Possible sensitive info request"); }
+
+  // DM redirect (social engineering tactic)
+  if (/\bdm\b/i.test(message) || /\bprivate message\b/i.test(message) || /\bpm me\b/i.test(message)) {
+    score += 15; reasons.push("Asks to move to DM/private chat — common tactic");
   }
 
-  // 5. Links in message (common in angler phishing)
   const urlRegex = /\bhttps?:\/\/[^\s<>"')]+/gi;
   const urls = message.match(urlRegex) || [];
   if (urls.length > 0) {
-    score += 10;
-    reasons.push(`Message contains ${urls.length} link(s)`);
-
-    // Check for URL shorteners
-    const shorteners = ['bit.ly', 'tinyurl.com', 't.co', 'goo.gl', 'rebrand.ly', 'ow.ly', 'is.gd', 'buff.ly', 'cutt.ly', 'shorturl.at'];
+    score += 10; reasons.push(`Message contains ${urls.length} link(s)`);
+    const shorteners = ["bit.ly","tinyurl.com","t.co","goo.gl","rebrand.ly","ow.ly","is.gd"];
     for (const u of urls) {
       try {
         const url = new URL(u);
         const host = url.hostname.toLowerCase();
-        if (shorteners.some(s => host.includes(s))) {
-          score += 10;
-          reasons.push(`Link uses URL shortener (${host}) – hides destination`);
-          break;
-        }
+        if (shorteners.some(s => host.includes(s))) { score += 10; reasons.push(`URL shortener (${host})`); break; }
       } catch (e) {}
     }
   }
 
-  // 6. Check for requests to move to DM/private chat
-  if (/\bdm\b/i.test(message) || /\bprivate message\b/i.test(message) || /\bpm me\b/i.test(message)) {
-    score += 15;
-    reasons.push('Asks to move conversation to private/DM (common tactic)');
-  }
-
-  // 7. Check for grammar/spelling issues (simple indicator)
-  const commonTypos = [
-    'verifiy', 'acount', 'recieve', 'immediatly', 'supportt', 'custommer'
-  ];
-  for (const typo of commonTypos) {
-    if (message.toLowerCase().includes(typo)) {
-      score += 5;
-      reasons.push(`Possible typo: "${typo}"`);
-      break;
-    }
-  }
-
-  // Normalize score (0-100)
   score = Math.min(100, Math.max(0, score));
-
-  // Label thresholds for angler phishing
-  let label, safeInc, riskInc;
-  if (score >= 60) {
-    label = '⚠ HIGH RISK – Angler Phishing Indicators Strong';
-    riskInc = 1;
-    safeInc = 0;
-  } else if (score >= 30) {
-    label = '⚠ SUSPICIOUS – Potential Social Media Scam';
-    riskInc = 1;
-    safeInc = 0;
-  } else {
-    label = '✅ SAFE – Low Risk of Angler Phishing';
-    safeInc = 1;
-    riskInc = 0;
-  }
-
+  let label, safeInc = 0, riskInc = 0;
+  if (score >= 60) { label = "⚠ HIGH RISK – Angler Phishing Indicators Strong"; riskInc = 1; }
+  else if (score >= 30) { label = "⚠ SUSPICIOUS – Potential Social Media Scam"; riskInc = 1; }
+  else { label = "✅ SAFE – Low Risk of Angler Phishing"; safeInc = 1; }
   return { score, reasons, label, safeInc, riskInc };
 }
 
-function displayAnglerResult(result) {
-  // Update dashboard counters
-  totalScans += 1;
-  safeCount += result.safeInc;
-  riskCount += result.riskInc;
+/* ================= HTTPS PHISHING CARD ================= */
 
-  document.getElementById('totalScans').innerText = totalScans;
-  document.getElementById('safeCountDisplay').innerText = safeCount;
-  document.getElementById('riskCountDisplay').innerText = riskCount;
-
-  if (totalScans > 0) {
-    document.getElementById('noDataText').style.display = 'none';
-  }
-
-  updateChart();
-
-  // Show result message
-  const resultEl = document.getElementById('anglerResult');
-  resultEl.innerHTML = `${result.label} (Score: ${result.score})<br><small>${result.reasons.join(' • ')}</small>`;
-}
-
-// ================= HTTPS PHISHING CARD CLICK =================
-document.querySelectorAll('.card').forEach(card => {
-  if (card.textContent.trim() === 'HTTPS Phishing') {
-    card.addEventListener('click', () => {
-      document.getElementById('scanner').style.display = 'none';
-      document.getElementById('emailScanner').style.display = 'none';
-      document.getElementById('spearScanner').style.display = 'none';
-      document.getElementById('whalingScanner').style.display = 'none';
-      document.getElementById('smishingScanner').style.display = 'none';
-      document.getElementById('vishingScanner').style.display = 'none';
-      document.getElementById('cloneScanner').style.display = 'none';
-      document.getElementById('quishingScanner').style.display = 'none';
-      document.getElementById('anglerScanner').style.display = 'none';
-      document.getElementById('httpsScanner').style.display = 'block';
+document.querySelectorAll(".card").forEach(card => {
+  if (card.textContent.trim() === "HTTPS Phishing") {
+    card.addEventListener("click", () => {
+      hideAllScanners();
+      document.getElementById("httpsScanner").style.display = "block";
     });
   }
 });
 
-// Extend showUrlScanner to also hide https scanner
-window.showUrlScanner = function() {
-  document.getElementById('emailScanner').style.display = 'none';
-  document.getElementById('spearScanner').style.display = 'none';
-  document.getElementById('whalingScanner').style.display = 'none';
-  document.getElementById('smishingScanner').style.display = 'none';
-  document.getElementById('vishingScanner').style.display = 'none';
-  document.getElementById('cloneScanner').style.display = 'none';
-  document.getElementById('quishingScanner').style.display = 'none';
-  document.getElementById('anglerScanner').style.display = 'none';
-  document.getElementById('httpsScanner').style.display = 'none';
-  document.getElementById('scanner').style.display = 'block';
-  document.getElementById('emailProgressBar').style.width = '0%';
-  document.getElementById('spearProgressBar').style.width = '0%';
-  document.getElementById('whaleProgressBar').style.width = '0%';
-  document.getElementById('smsProgressBar').style.width = '0%';
-  document.getElementById('vishProgressBar').style.width = '0%';
-  document.getElementById('cloneProgressBar').style.width = '0%';
-  document.getElementById('quishProgressBar').style.width = '0%';
-  document.getElementById('anglerProgressBar').style.width = '0%';
-  document.getElementById('httpsProgressBar').style.width = '0%';
-  document.getElementById('emailResult').innerHTML = '';
-  document.getElementById('spearResult').innerHTML = '';
-  document.getElementById('whaleResult').innerHTML = '';
-  document.getElementById('smsResult').innerHTML = '';
-  document.getElementById('vishResult').innerHTML = '';
-  document.getElementById('cloneResult').innerHTML = '';
-  document.getElementById('quishResult').innerHTML = '';
-  document.getElementById('anglerResult').innerHTML = '';
-  document.getElementById('httpsResult').innerHTML = '';
-};
-
-// ================= HTTPS PHISHING SCAN =================
 function scanHttps() {
-  const url = document.getElementById('httpsUrl').value;
-  const context = document.getElementById('httpsContext').value;
-
-  if (!url) {
-    alert('Please enter a URL to scan');
-    return;
-  }
-
-  animateCyberProgress('httpsProgressBar', 'httpsProgressPercent', function () {
+  const url = document.getElementById("httpsUrl").value.trim();
+  const context = document.getElementById("httpsContext").value.trim();
+  if (!url) { showInlineError("httpsUrl", "⚠ Please enter a URL to scan."); return; }
+  animateCyberProgress("httpsProgressBar", "httpsProgressPercent", function () {
     const result = analyzeHttpsContent(url, context);
-    displayHttpsResult(result);
+    result.scanType = "HTTPS Phishing";
+    displayGenericResult("httpsResult", url, result);
   });
 }
 
 function analyzeHttpsContent(url, context) {
   let score = 0;
   const reasons = [];
-  const fullText = (url + ' ' + context).toLowerCase();
 
-  // 1. Basic URL parsing
   let parsedUrl;
-  try {
-    parsedUrl = new URL(url);
-  } catch (e) {
-    score += 30;
-    reasons.push('Invalid URL format');
-    return { score: Math.min(100, score), reasons, label: '⚠ INVALID URL', safeInc: 0, riskInc: 1 };
-  }
+  try { parsedUrl = new URL(url); }
+  catch (e) { return { score: 50, reasons: ["Invalid URL format"], label: "⚠ SUSPICIOUS – Invalid URL", safeInc: 0, riskInc: 1 }; }
 
   const protocol = parsedUrl.protocol;
   const hostname = parsedUrl.hostname.toLowerCase();
   const path = parsedUrl.pathname.toLowerCase();
-  const tld = hostname.split('.').pop();
+  const tld = hostname.split(".").pop();
 
-  // 2. Check if HTTPS is used (legitimate but could be fake)
-  if (protocol !== 'https:') {
-    score += 20;
-    reasons.push('URL does not use HTTPS (less secure)');
-  } else {
-    reasons.push('URL uses HTTPS (common in phishing to appear legitimate)');
-    // Still add small risk because phishing sites use HTTPS
-    score += 5;
-  }
+  if (protocol !== "https:") { score += 20; reasons.push("URL does not use HTTPS"); }
+  else { score += 5; reasons.push("Uses HTTPS (note: phishing sites also use HTTPS)"); }
 
-  // 3. IP address in hostname
-  if (net && net.isIP) {
-    // Use net.isIP if available (Node.js), but in browser we need a simple regex
-    const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
-    if (ipRegex.test(hostname)) {
-      score += 25;
-      reasons.push('Hostname is an IP address (highly suspicious)');
-    }
-  } else {
-    // Simple IP check for browser
-    const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
-    if (ipRegex.test(hostname)) {
-      score += 25;
-      reasons.push('Hostname is an IP address (highly suspicious)');
-    }
-  }
+  const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
+  if (ipRegex.test(hostname)) { score += 25; reasons.push("Hostname is an IP address"); }
 
-  // 4. Suspicious TLDs
-  const suspiciousTLDs = ['zip', 'mov', 'top', 'xyz', 'click', 'country', 'kim', 'gq', 'tk', 'cf'];
-  if (suspiciousTLDs.includes(tld)) {
-    score += 10;
-    reasons.push(`Uses risky TLD .${tld}`);
-  }
+  const suspTlds = ["zip","mov","top","xyz","click","country","kim","gq","tk","cf","pw","ml","ga","cf"];
+  if (suspTlds.includes(tld)) { score += 10; reasons.push(`Suspicious TLD .${tld}`); }
 
-  // 5. Domain similarity to known brands
   const fromBase = getBaseDomain(hostname);
   for (const brand of HIGH_VALUE_BRANDS) {
     const brandBase = getBaseDomain(brand);
     const sim = tokenSimilarity(fromBase, brandBase);
-    if (sim > 0.55 && fromBase !== brandBase) {
-      score += 25;
-      reasons.push(`Domain looks similar to ${brandBase} but is actually ${fromBase}`);
-      break;
-    }
+    if (sim > 0.55 && fromBase !== brandBase) { score += 25; reasons.push(`Domain resembles ${brandBase} (actually ${fromBase})`); break; }
   }
 
-  // 6. URL shorteners
-  const shorteners = ['bit.ly', 'tinyurl.com', 't.co', 'goo.gl', 'rebrand.ly', 'ow.ly', 'is.gd', 'buff.ly', 'cutt.ly', 'shorturl.at'];
-  if (shorteners.some(s => hostname.includes(s))) {
-    score += 15;
-    reasons.push('URL uses a shortener (hides destination)');
-  }
+  const shorteners = ["bit.ly","tinyurl.com","t.co","goo.gl","rebrand.ly","ow.ly","is.gd"];
+  if (shorteners.some(s => hostname.includes(s))) { score += 15; reasons.push("URL shortener used"); }
 
-  // 7. Keywords in path
-  const suspiciousKeywords = ['login', 'signin', 'verify', 'secure', 'account', 'update', 'reset', 'auth', 'session'];
-  const pathHits = suspiciousKeywords.filter(k => path.includes(k)).length;
-  if (pathHits > 0) {
-    score += pathHits * 5;
-    reasons.push(`Path contains suspicious keywords: ${suspiciousKeywords.filter(k => path.includes(k)).join(', ')}`);
-  }
+  const suspKeywords = ["login","signin","verify","secure","account","update","reset","auth","webscr","confirm"];
+  const pathHits = suspKeywords.filter(k => path.includes(k));
+  if (pathHits.length > 0) { score += Math.min(20, pathHits.length * 5); reasons.push(`Suspicious path keywords: ${pathHits.join(", ")}`); }
 
-  // 8. Check for @ symbol in URL (common trick)
-  if (url.includes('@')) {
-    score += 15;
-    reasons.push('URL contains @ symbol (may hide real domain)');
-  }
+  if (url.includes("@")) { score += 15; reasons.push("@ symbol in URL"); }
 
-  // 9. Check for multiple subdomains (e.g., secure-login.paypal.com.evil.com)
-  const subdomainCount = hostname.split('.').length - 2;
-  if (subdomainCount > 2) {
-    score += 10;
-    reasons.push(`Many subdomains (${subdomainCount}) – could be hiding real domain`);
-  }
+  const subdomainCount = hostname.split(".").length - 2;
+  if (subdomainCount > 2) { score += 10; reasons.push(`Many subdomains (${subdomainCount})`); }
 
-  // 10. Context analysis if provided
+  if (/%[0-9a-fA-F]{2}/.test(url)) { score += 10; reasons.push("Hex encoding in URL"); }
+
   if (context) {
-    // Urgency keywords
-    const urgentPatterns = [
-      /\burgent\b/i, /\bimmediately\b/i, /\baction required\b/i,
-      /\bverify\b/i, /\bupdate\b/i, /\bsecurity alert\b/i
-    ];
-    const urgentHits = urgentPatterns.filter(r => r.test(context)).length;
-    if (urgentHits >= 2) {
-      score += 10;
-      reasons.push(`Context contains urgency language (${urgentHits} indicators)`);
-    } else if (urgentHits === 1) {
-      score += 5;
-      reasons.push('Context contains some urgency language');
-    }
-
-    // Check if context mentions brands
-    for (const brand of HIGH_VALUE_BRANDS) {
-      if (context.toLowerCase().includes(brand.split('.')[0])) {
-        reasons.push(`Context mentions ${brand.split('.')[0]} – could be lure`);
-        break;
-      }
-    }
+    const urgentPats = [/\burgent\b/i,/\bverify\b/i,/\bsecurity alert\b/i,/\bimmediately\b/i];
+    const urgentHits = urgentPats.filter(r => r.test(context)).length;
+    if (urgentHits >= 1) { score += 8; reasons.push("Context contains urgency language"); }
   }
 
-  // Normalize score (0-100)
   score = Math.min(100, Math.max(0, score));
-
-  // Label thresholds
-  let label, safeInc, riskInc;
-  if (score >= 65) {
-    label = '⚠ HIGH RISK – HTTPS Phishing Indicators Strong';
-    riskInc = 1;
-    safeInc = 0;
-  } else if (score >= 30) {
-    label = '⚠ SUSPICIOUS – Potential HTTPS Scam';
-    riskInc = 1;
-    safeInc = 0;
-  } else {
-    label = '✅ SAFE – Low Risk of HTTPS Phishing';
-    safeInc = 1;
-    riskInc = 0;
-  }
-
+  let label, safeInc = 0, riskInc = 0;
+  if (score >= 65) { label = "⚠ HIGH RISK – HTTPS Phishing Indicators Strong"; riskInc = 1; }
+  else if (score >= 30) { label = "⚠ SUSPICIOUS – Potential HTTPS Scam"; riskInc = 1; }
+  else { label = "✅ SAFE – Low Risk of HTTPS Phishing"; safeInc = 1; }
   return { score, reasons, label, safeInc, riskInc };
 }
 
-function displayHttpsResult(result) {
-  // Update dashboard counters
-  totalScans += 1;
-  safeCount += result.safeInc;
-  riskCount += result.riskInc;
+/* ================= EVIL TWIN CARD ================= */
 
-  document.getElementById('totalScans').innerText = totalScans;
-  document.getElementById('safeCountDisplay').innerText = safeCount;
-  document.getElementById('riskCountDisplay').innerText = riskCount;
-
-  if (totalScans > 0) {
-    document.getElementById('noDataText').style.display = 'none';
-  }
-
-  updateChart();
-
-  // Show result message
-  const resultEl = document.getElementById('httpsResult');
-  resultEl.innerHTML = `${result.label} (Score: ${result.score})<br><small>${result.reasons.join(' • ')}</small>`;
-}
-
-// ================= EVIL TWIN CARD CLICK =================
-document.querySelectorAll('.card').forEach(card => {
-  if (card.textContent.trim() === 'Evil Twin') {
-    card.addEventListener('click', () => {
-      document.getElementById('scanner').style.display = 'none';
-      document.getElementById('emailScanner').style.display = 'none';
-      document.getElementById('spearScanner').style.display = 'none';
-      document.getElementById('whalingScanner').style.display = 'none';
-      document.getElementById('smishingScanner').style.display = 'none';
-      document.getElementById('vishingScanner').style.display = 'none';
-      document.getElementById('cloneScanner').style.display = 'none';
-      document.getElementById('quishingScanner').style.display = 'none';
-      document.getElementById('anglerScanner').style.display = 'none';
-      document.getElementById('httpsScanner').style.display = 'none';
-      document.getElementById('evilTwinScanner').style.display = 'block';
+document.querySelectorAll(".card").forEach(card => {
+  if (card.textContent.trim() === "Evil Twin") {
+    card.addEventListener("click", () => {
+      hideAllScanners();
+      document.getElementById("evilTwinScanner").style.display = "block";
     });
   }
 });
 
-// Extend showUrlScanner to also hide evil twin scanner
-window.showUrlScanner = function() {
-  document.getElementById('emailScanner').style.display = 'none';
-  document.getElementById('spearScanner').style.display = 'none';
-  document.getElementById('whalingScanner').style.display = 'none';
-  document.getElementById('smishingScanner').style.display = 'none';
-  document.getElementById('vishingScanner').style.display = 'none';
-  document.getElementById('cloneScanner').style.display = 'none';
-  document.getElementById('quishingScanner').style.display = 'none';
-  document.getElementById('anglerScanner').style.display = 'none';
-  document.getElementById('httpsScanner').style.display = 'none';
-  document.getElementById('evilTwinScanner').style.display = 'none';
-  document.getElementById('scanner').style.display = 'block';
-  document.getElementById('emailProgressBar').style.width = '0%';
-  document.getElementById('spearProgressBar').style.width = '0%';
-  document.getElementById('whaleProgressBar').style.width = '0%';
-  document.getElementById('smsProgressBar').style.width = '0%';
-  document.getElementById('vishProgressBar').style.width = '0%';
-  document.getElementById('cloneProgressBar').style.width = '0%';
-  document.getElementById('quishProgressBar').style.width = '0%';
-  document.getElementById('anglerProgressBar').style.width = '0%';
-  document.getElementById('httpsProgressBar').style.width = '0%';
-  document.getElementById('evilProgressBar').style.width = '0%';
-  document.getElementById('emailResult').innerHTML = '';
-  document.getElementById('spearResult').innerHTML = '';
-  document.getElementById('whaleResult').innerHTML = '';
-  document.getElementById('smsResult').innerHTML = '';
-  document.getElementById('vishResult').innerHTML = '';
-  document.getElementById('cloneResult').innerHTML = '';
-  document.getElementById('quishResult').innerHTML = '';
-  document.getElementById('anglerResult').innerHTML = '';
-  document.getElementById('httpsResult').innerHTML = '';
-  document.getElementById('evilResult').innerHTML = '';
-};
-
-// ================= EVIL TWIN SCAN =================
 function scanEvilTwin() {
-  const ssid = document.getElementById('evilSsid').value;
-  const security = document.getElementById('evilSecurity').value;
-  const signal = document.getElementById('evilSignal').value;
-  const duplicate = document.getElementById('evilDuplicate').value;
-  const publicPlace = document.getElementById('evilPublicPlace').value;
-  const details = document.getElementById('evilDetails').value;
-
-  if (!ssid) {
-    alert('Please enter the Wi‑Fi SSID');
-    return;
-  }
-
-  animateCyberProgress('evilProgressBar', 'evilProgressPercent', function () {
+  const ssid = document.getElementById("evilSsid").value.trim();
+  const security = document.getElementById("evilSecurity").value;
+  const signal = document.getElementById("evilSignal").value;
+  const duplicate = document.getElementById("evilDuplicate").value;
+  const publicPlace = document.getElementById("evilPublicPlace").value;
+  const details = document.getElementById("evilDetails").value.trim();
+  if (!ssid) { showInlineError("evilSsid", "⚠ Please enter the Wi-Fi SSID."); return; }
+  animateCyberProgress("evilProgressBar", "evilProgressPercent", function () {
     const result = analyzeEvilTwinContent(ssid, security, signal, duplicate, publicPlace, details);
-    displayEvilTwinResult(result);
+    result.scanType = "Evil Twin";
+    displayGenericResult("evilResult", "wifi://" + ssid, result);
   });
 }
 
@@ -2644,173 +1663,49 @@ function analyzeEvilTwinContent(ssid, security, signal, duplicate, publicPlace, 
   let score = 0;
   const reasons = [];
   const ssidLower = ssid.toLowerCase();
-  const detailsLower = details.toLowerCase();
+  const detailsLower = (details || "").toLowerCase();
 
-  // 1. SSID matches common public Wi‑Fi names (often spoofed)
-  const commonSsids = [
-    'starbucks', 'att', 'xfinity', 'google', 'free wifi', 'public wifi',
-    'airport', 'hotel', 'cafe', 'coffee', 'guest', 'customer'
-  ];
-  for (const common of commonSsids) {
-    if (ssidLower.includes(common)) {
-      score += 10;
-      reasons.push(`SSID matches common public network name (“${common}”) – often targeted by evil twins`);
-      break;
-    }
-  }
+  const commonSsids = ["starbucks","att","xfinity","google","free wifi","public wifi","airport","hotel","cafe","coffee","guest","customer","telstra","bt","sky"];
+  if (commonSsids.some(c => ssidLower.includes(c))) { score += 10; reasons.push(`SSID matches common public name — often spoofed`); }
 
-  // 2. Check for suspicious SSID naming (typos, extra characters)
-  const typoPatterns = [
-    /starbuks/i, /startbucks/i, /xfininty/i, /gooogle/i, /f ree/i, /wiffi/i
-  ];
-  for (const pattern of typoPatterns) {
-    if (pattern.test(ssid)) {
-      score += 15;
-      reasons.push(`SSID contains possible typo (“${ssid}”) – may be fake`);
-      break;
-    }
-  }
+  if (security === "open") { score += 25; reasons.push("Open network (no password) — typical for evil twins"); }
+  else if (security === "wep") { score += 20; reasons.push("WEP security — outdated and easily cracked"); }
+  else if (security === "wpa" || security === "wpa2") {
+    if (publicPlace === "yes") { score += 5; reasons.push("WPA/WPA2 in public place — still possible evil twin"); }
+  } else if (security === "wpa3") { reasons.push("WPA3 — strong security protocol"); }
 
-  // 3. Security type analysis
-  if (security === 'open') {
-    score += 25;
-    reasons.push('Network is open (no password) – typical for evil twins');
-  } else if (security === 'wep') {
-    score += 20;
-    reasons.push('Uses WEP (outdated and easily cracked)');
-  } else if (security === 'wpa' || security === 'wpa2') {
-    // Slight risk if it's a public place and open would be expected
-    if (publicPlace === 'yes') {
-      score += 5;
-      reasons.push('Uses WPA/WPA2, which is better, but in public places evil twins may still exist');
-    }
-  } else if (security === 'wpa3') {
-    // WPA3 is modern, less likely to be evil twin unless it's a very sophisticated attack
-    score -= 5; // reduce risk
-    reasons.push('Uses WPA3 (strong security)');
-  }
+  if (duplicate === "yes") { score += 30; reasons.push("Duplicate SSID visible — classic evil twin indicator"); }
+  else if (duplicate === "unsure") { score += 10; reasons.push("Unsure about duplicate SSIDs — check carefully"); }
 
-  // 4. Duplicate SSID presence
-  if (duplicate === 'yes') {
-    score += 30;
-    reasons.push('You have seen multiple networks with the same SSID – classic evil twin sign');
-  } else if (duplicate === 'unsure') {
-    score += 10;
-    reasons.push('Not sure if duplicates exist – check carefully');
-  }
+  if (publicPlace === "yes") { score += 10; reasons.push("Public location — evil twins are common here"); }
 
-  // 5. Public place context
-  if (publicPlace === 'yes') {
-    score += 10;
-    reasons.push('You are in a public location – evil twins are common here');
-  }
+  if (signal === "strong" && duplicate === "yes") { score += 10; reasons.push("Strong signal + duplicate SSID — possible rogue AP nearby"); }
+  else if (signal === "weak" && publicPlace === "yes") { score += 5; reasons.push("Weak signal in public place — possible distant fake AP"); }
 
-  // 6. Signal strength
-  if (signal === 'strong' && duplicate === 'yes') {
-    // If there's a duplicate with strong signal, could be the fake one placed nearby
-    score += 10;
-    reasons.push('Strong signal with duplicate – possible rogue access point close by');
-  } else if (signal === 'weak' && publicPlace === 'yes') {
-    score += 5;
-    reasons.push('Weak signal in public place – might be a fake placed at a distance');
-  }
+  const sensitivePats = [/login page/i,/enter password/i,/credit card/i,/payment/i,/verify identity/i,/billing/i];
+  if (sensitivePats.some(p => p.test(detailsLower))) { score += 15; reasons.push("Sensitive info requested after connecting"); }
 
-  // 7. Check details for keywords like "login page", "password", "credit card"
-  const suspiciousDetails = [
-    /login page/i, /enter password/i, /credit card/i, /payment/i,
-    /verify identity/i, /update account/i, /billing/i
-  ];
-  for (const pattern of suspiciousDetails) {
-    if (pattern.test(detailsLower)) {
-      score += 15;
-      reasons.push('Details mention sensitive requests (common after connecting)');
-      break;
-    }
-  }
+  if (/captive portal|sign in to network|accept terms/i.test(detailsLower)) { score += 10; reasons.push("Captive portal detected — could steal credentials"); }
 
-  // 8. Captive portal mention
-  if (/captive portal|sign in to network|accept terms/i.test(detailsLower)) {
-    score += 10;
-    reasons.push('Mentions captive portal – could be used to steal credentials');
-  }
-
-  // Normalize score (0-100)
   score = Math.min(100, Math.max(0, score));
-
-  // Label thresholds
-  let label, safeInc, riskInc;
-  if (score >= 60) {
-    label = '⚠ HIGH RISK – Evil Twin Indicators Strong';
-    riskInc = 1;
-    safeInc = 0;
-  } else if (score >= 30) {
-    label = '⚠ SUSPICIOUS – Potential Rogue Wi‑Fi';
-    riskInc = 1;
-    safeInc = 0;
-  } else {
-    label = '✅ SAFE – Low Risk of Evil Twin';
-    safeInc = 1;
-    riskInc = 0;
-  }
-
+  let label, safeInc = 0, riskInc = 0;
+  if (score >= 60) { label = "⚠ HIGH RISK – Evil Twin Indicators Strong"; riskInc = 1; }
+  else if (score >= 30) { label = "⚠ SUSPICIOUS – Potential Rogue Wi-Fi"; riskInc = 1; }
+  else { label = "✅ SAFE – Low Risk of Evil Twin"; safeInc = 1; }
   return { score, reasons, label, safeInc, riskInc };
 }
 
-function displayEvilTwinResult(result) {
-  // Update dashboard counters
-  totalScans += 1;
-  safeCount += result.safeInc;
-  riskCount += result.riskInc;
-
-  document.getElementById('totalScans').innerText = totalScans;
-  document.getElementById('safeCountDisplay').innerText = safeCount;
-  document.getElementById('riskCountDisplay').innerText = riskCount;
-
-  if (totalScans > 0) {
-    document.getElementById('noDataText').style.display = 'none';
-  }
-
-  updateChart();
-
-  // Show result message
-  const resultEl = document.getElementById('evilResult');
-  resultEl.innerHTML = `${result.label} (Score: ${result.score})<br><small>${result.reasons.join(' • ')}</small>`;
-}
-
-/*----------------------Scrolling Effect----------------------*/
+/* ================= SCROLLING FADE EFFECT ================= */
 
 const fadeSections = document.querySelectorAll(".fade-section");
 
 const observer = new IntersectionObserver(
   (entries) => {
     entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("show");
-      }
+      if (entry.isIntersecting) entry.target.classList.add("show");
     });
   },
-  {
-    threshold: 0.2,
-  },
+  { threshold: 0.2 }
 );
 
-fadeSections.forEach((section) => {
-  observer.observe(section);
-});
-
-function animateCounter(id, target) {
-  let count = 0;
-  const speed = 20;
-  const increment = Math.ceil(target / 30);
-
-  const interval = setInterval(() => {
-    count += increment;
-
-    if (count >= target) {
-      document.getElementById(id).innerText = target;
-      clearInterval(interval);
-    } else {
-      document.getElementById(id).innerText = count;
-    }
-  }, speed);
-}
+fadeSections.forEach((section) => { observer.observe(section); });
