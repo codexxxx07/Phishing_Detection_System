@@ -868,6 +868,10 @@ function displayGenericResult(resultElId, logPrefix, result) {
   if (result.safeInc) safeCount++;
   if (result.riskInc) riskCount++;
 
+  lastRiskStatus = result.label.includes("HIGH RISK") ? "Phishing" :
+                   result.label.includes("SUSPICIOUS") ? "Suspicious" : "Safe";
+  lastRiskLevelPercent = mapStatusToPercent(lastRiskStatus, result.score);
+
   animateCounter("totalScans", totalScans);
   animateCounter("safeCountDisplay", safeCount);
   animateCounter("riskCountDisplay", riskCount);
@@ -876,10 +880,6 @@ function displayGenericResult(resultElId, logPrefix, result) {
   if (noData) noData.style.display = "none";
 
   updateChart();
-
-  lastRiskStatus = result.label.includes("HIGH RISK") ? "Phishing" :
-                   result.label.includes("SUSPICIOUS") ? "Suspicious" : "Safe";
-  lastRiskLevelPercent = mapStatusToPercent(lastRiskStatus, result.score);
   updateRiskUI();
 
   const resultEl = document.getElementById(resultElId);
@@ -895,13 +895,27 @@ function displayGenericResult(resultElId, logPrefix, result) {
   ensureClearHistoryButton();
 }
 
-/* ================= EMAIL PHISHING CARD CLICK ================= */
+/* ================= CARD CLICK EVENT LISTENERS ================= */
+
+const scannerMap = {
+  "Email Phishing": "emailScanner",
+  "Spear Phishing": "spearScanner",
+  "Whaling": "whalingScanner",
+  "Smishing": "smishingScanner",
+  "Vishing": "vishingScanner",
+  "Clone Phishing": "cloneScanner",
+  "Quishing": "quishingScanner",
+  "Angler Phishing": "anglerScanner",
+  "HTTPS Phishing": "httpsScanner",
+  "Evil Twin": "evilTwinScanner",
+};
 
 document.querySelectorAll(".card").forEach((card) => {
-  if (card.textContent.trim() === "Email Phishing") {
+  const key = card.textContent.trim();
+  if (scannerMap[key]) {
     card.addEventListener("click", () => {
       hideAllScanners();
-      document.getElementById("emailScanner").style.display = "block";
+      document.getElementById(scannerMap[key]).style.display = "block";
     });
   }
 });
@@ -1005,16 +1019,7 @@ function analyzeEmailContent(from, subject, body) {
   return { score, reasons, label, safeInc, riskInc };
 }
 
-/* ================= SPEAR PHISHING CARD ================= */
-
-document.querySelectorAll(".card").forEach((card) => {
-  if (card.textContent.trim() === "Spear Phishing") {
-    card.addEventListener("click", () => {
-      hideAllScanners();
-      document.getElementById("spearScanner").style.display = "block";
-    });
-  }
-});
+/* ================= SPEAR PHISHING ================= */
 
 function scanSpear() {
   const from = document.getElementById("spearFrom").value.trim();
@@ -1083,16 +1088,7 @@ function analyzeSpearContent(from, to, recipientName, subject, body) {
   return { score, reasons, label, safeInc, riskInc };
 }
 
-/* ================= WHALING CARD ================= */
-
-document.querySelectorAll(".card").forEach((card) => {
-  if (card.textContent.trim() === "Whaling") {
-    card.addEventListener("click", () => {
-      hideAllScanners();
-      document.getElementById("whalingScanner").style.display = "block";
-    });
-  }
-});
+/* ================= WHALING ================= */
 
 function scanWhaling() {
   const from = document.getElementById("whaleFrom").value.trim();
@@ -1159,16 +1155,7 @@ function analyzeWhalingContent(from, to, targetName, targetRole, subject, body) 
   return { score, reasons, label, safeInc, riskInc };
 }
 
-/* ================= SMISHING CARD ================= */
-
-document.querySelectorAll(".card").forEach((card) => {
-  if (card.textContent.trim() === "Smishing") {
-    card.addEventListener("click", () => {
-      hideAllScanners();
-      document.getElementById("smishingScanner").style.display = "block";
-    });
-  }
-});
+/* ================= SMISHING ================= */
 
 function scanSmishing() {
   const sender = document.getElementById("smsSender").value.trim();
@@ -1231,16 +1218,7 @@ function analyzeSmishingContent(sender, recipient, body) {
   return { score, reasons, label, safeInc, riskInc };
 }
 
-/* ================= VISHING CARD ================= */
-
-document.querySelectorAll(".card").forEach(card => {
-  if (card.textContent.trim() === "Vishing") {
-    card.addEventListener("click", () => {
-      hideAllScanners();
-      document.getElementById("vishingScanner").style.display = "block";
-    });
-  }
-});
+/* ================= VISHING ================= */
 
 function scanVishing() {
   const callerId = document.getElementById("vishCallerId").value.trim();
@@ -1301,16 +1279,7 @@ function analyzeVishingContent(callerId, claimedIdentity, callPurpose, details) 
   return { score, reasons, label, safeInc, riskInc };
 }
 
-/* ================= CLONE PHISHING CARD ================= */
-
-document.querySelectorAll(".card").forEach(card => {
-  if (card.textContent.trim() === "Clone Phishing") {
-    card.addEventListener("click", () => {
-      hideAllScanners();
-      document.getElementById("cloneScanner").style.display = "block";
-    });
-  }
-});
+/* ================= CLONE PHISHING ================= */
 
 function scanClone() {
   const from = document.getElementById("cloneFrom").value.trim();
@@ -1389,16 +1358,7 @@ function analyzeCloneContent(from, subject, body) {
   return { score, reasons, label, safeInc, riskInc };
 }
 
-/* ================= QUISHING CARD ================= */
-
-document.querySelectorAll(".card").forEach(card => {
-  if (card.textContent.trim() === "Quishing") {
-    card.addEventListener("click", () => {
-      hideAllScanners();
-      document.getElementById("quishingScanner").style.display = "block";
-    });
-  }
-});
+/* ================= QUISHING ================= */
 
 function scanQuishing() {
   const from = document.getElementById("quishFrom").value.trim();
@@ -1462,16 +1422,7 @@ function analyzeQuishingContent(from, subject, body) {
   return { score, reasons, label, safeInc, riskInc };
 }
 
-/* ================= ANGLER PHISHING CARD ================= */
-
-document.querySelectorAll(".card").forEach(card => {
-  if (card.textContent.trim() === "Angler Phishing") {
-    card.addEventListener("click", () => {
-      hideAllScanners();
-      document.getElementById("anglerScanner").style.display = "block";
-    });
-  }
-});
+/* ================= ANGLER PHISHING ================= */
 
 function scanAngler() {
   const platform = document.getElementById("anglerPlatform").value;
@@ -1554,16 +1505,7 @@ function analyzeAnglerContent(platform, handle, claim, message) {
   return { score, reasons, label, safeInc, riskInc };
 }
 
-/* ================= HTTPS PHISHING CARD ================= */
-
-document.querySelectorAll(".card").forEach(card => {
-  if (card.textContent.trim() === "HTTPS Phishing") {
-    card.addEventListener("click", () => {
-      hideAllScanners();
-      document.getElementById("httpsScanner").style.display = "block";
-    });
-  }
-});
+/* ================= HTTPS PHISHING ================= */
 
 function scanHttps() {
   const url = document.getElementById("httpsUrl").value.trim();
@@ -1633,16 +1575,7 @@ function analyzeHttpsContent(url, context) {
   return { score, reasons, label, safeInc, riskInc };
 }
 
-/* ================= EVIL TWIN CARD ================= */
-
-document.querySelectorAll(".card").forEach(card => {
-  if (card.textContent.trim() === "Evil Twin") {
-    card.addEventListener("click", () => {
-      hideAllScanners();
-      document.getElementById("evilTwinScanner").style.display = "block";
-    });
-  }
-});
+/* ================= EVIL TWIN ================= */
 
 function scanEvilTwin() {
   const ssid = document.getElementById("evilSsid").value.trim();
