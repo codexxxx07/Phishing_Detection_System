@@ -1,5 +1,20 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+  // Hamburger menu toggle
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const navLinks = document.querySelector('.nav-links');
+  const navLinkItems = document.querySelectorAll('.nav-links a');
+
+  hamburgerBtn.addEventListener('click', function () {
+    navLinks.classList.toggle('open');
+  });
+
+  navLinks.querySelectorAll('a').forEach(function (link) {
+    link.addEventListener('click', function () {
+      navLinks.classList.remove('open');
+    });
+  });
+
   document.getElementById("urlInput").addEventListener("keydown", function (e) {
     if (e.key === "Enter") {
       e.preventDefault();
