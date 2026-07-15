@@ -1,26 +1,41 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-  // Hamburger menu toggle
+  /* ── Hamburger menu ── */
   const hamburgerBtn = document.getElementById('hamburgerBtn');
-  const navLinks = document.querySelector('.nav-links');
-  const navLinkItems = document.querySelectorAll('.nav-links a');
+  const navLinks = document.getElementById('navLinks');
 
   hamburgerBtn.addEventListener('click', function () {
-    navLinks.classList.toggle('open');
+    const isOpen = navLinks.classList.toggle('open');
+    hamburgerBtn.setAttribute('aria-expanded', isOpen);
   });
 
   navLinks.querySelectorAll('a').forEach(function (link) {
     link.addEventListener('click', function () {
       navLinks.classList.remove('open');
+      hamburgerBtn.setAttribute('aria-expanded', 'false');
     });
   });
 
-  document.getElementById("urlInput").addEventListener("keydown", function (e) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      scanThreat();
-    }
+  /* ── URL input: Enter key + clear button ── */
+  const urlInput = document.getElementById("urlInput");
+  const urlClear = document.getElementById("urlClear");
+
+  urlInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { e.preventDefault(); scanThreat(); }
   });
+  urlInput.addEventListener("input", function () {
+    urlClear.style.display = this.value ? "block" : "none";
+  });
+  if (urlClear) {
+    urlClear.addEventListener("click", function () {
+      urlInput.value = "";
+      urlClear.style.display = "none";
+      document.getElementById("result").innerHTML = "";
+      const pc = document.getElementById("mainProgressContainer");
+      if (pc) pc.style.display = "none";
+      urlInput.focus();
+    });
+  }
 
   /* ================= MATRIX RAIN ================= */
 
@@ -75,10 +90,17 @@ document.addEventListener("DOMContentLoaded", function () {
   /* ================= ENTER BUTTON ================= */
 
   document.getElementById("enterBtn").addEventListener("click", function () {
-    document.getElementById("matrixScreen").style.display = "none";
-    document.getElementById("mainContent").style.display = "block";
-    document.body.classList.add("main-bg");
-    typeHomeText();
+    const ms = document.getElementById("matrixScreen");
+    ms.style.transition = "opacity 0.6s ease";
+    ms.style.opacity = "0";
+    setTimeout(() => {
+      ms.style.display = "none";
+      const mc = document.getElementById("mainContent");
+      mc.style.display = "flex";
+      mc.style.flexDirection = "column";
+      document.body.classList.add("main-bg");
+      typeHomeText();
+    }, 600);
   });
 
   function typeHomeText() {
@@ -105,6 +127,9 @@ document.addEventListener("DOMContentLoaded", function () {
   teamNames.forEach((member) => {
     member.addEventListener("mouseenter", () => activateMember(member));
     member.addEventListener("click", () => activateMember(member));
+    member.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activateMember(member); }
+    });
   });
 
   const sidebar = document.getElementById("dashboardSidebar");
@@ -165,21 +190,12 @@ function showToast(msg) {
   if (!toast) {
     toast = document.createElement("div");
     toast.id = "cyberToast";
-    toast.style.cssText = `
-      position:fixed; bottom:28px; right:28px; z-index:9999;
-      background:#0f0f0f; border:1px solid #00ff99;
-      color:#00ff99; font-family:monospace; font-size:13px;
-      padding:10px 20px; border-radius:6px;
-      box-shadow:0 0 18px rgba(0,255,153,0.35);
-      opacity:0; transition:opacity 0.3s ease;
-      letter-spacing:1px;
-    `;
     document.body.appendChild(toast);
   }
   toast.innerText = msg;
-  toast.style.opacity = "1";
+  toast.classList.add("visible");
   clearTimeout(toast._timer);
-  toast._timer = setTimeout(() => { toast.style.opacity = "0"; }, 2200);
+  toast._timer = setTimeout(() => { toast.classList.remove("visible"); }, 2400);
 }
 
 /* ================= INLINE ERROR HELPER ================= */
@@ -326,12 +342,13 @@ function ensureClearHistoryButton() {
 
   const btn = document.createElement("button");
   btn.id = "clearHistoryBtn";
-  btn.innerText = "Clear History";
+  btn.innerHTML = '<i class="fas fa-trash"></i> Clear History';
   btn.style.cssText = `
     background:transparent; border:1px solid #ff3355; color:#ff3355;
     font-family:monospace; font-size:12px; letter-spacing:1px;
-    padding:7px 16px; cursor:pointer; margin-top:12px;
-    transition:background 0.2s ease, color 0.2s ease;
+    padding:8px 18px; cursor:pointer; margin-top:14px; border-radius:8px;
+    display:inline-flex; align-items:center; gap:6px;
+    transition:background 0.25s ease, color 0.25s ease;
   `;
   btn.addEventListener("mouseenter", () => { btn.style.background="#ff3355"; btn.style.color="#000"; });
   btn.addEventListener("mouseleave", () => { btn.style.background="transparent"; btn.style.color="#ff3355"; });
@@ -373,7 +390,6 @@ let currentMeterPercent = 0;
 function scanThreat() {
   const input = document.getElementById("urlInput").value.trim();
 
-  // Input validation
   if (!input) {
     showInlineError("urlInput", "⚠ Please enter a URL or message to scan.");
     return;
@@ -383,13 +399,20 @@ function scanThreat() {
     return;
   }
 
+  // Show progress container
+  const pc = document.getElementById("mainProgressContainer");
+  if (pc) pc.style.display = "block";
+
   const progress = document.getElementById("progressBar");
   progress.style.width = "0%";
   const percentEl = document.getElementById("progressPercent");
   if (percentEl) percentEl.innerText = "0%";
 
+  const resultEl = document.getElementById("result");
+  if (resultEl) resultEl.innerHTML = "";
+
   const analyzingText = document.getElementById("analyzingText");
-  if (analyzingText) analyzingText.style.display = "block";
+  if (analyzingText) analyzingText.style.display = "flex";
 
   startLoadingSimulation(function () {
     const result = analyzeUrl(input);
@@ -554,17 +577,24 @@ function displayUrlResult(input, result) {
   if (analyzingText) analyzingText.style.display = "none";
 
   // Build result HTML
-  let icon = result.verdict === "DANGEROUS" ? "🚨" : result.verdict === "SUSPICIOUS" ? "⚠" : "✅";
+  let icon = result.verdict === "DANGEROUS" ? "🚨" : result.verdict === "SUSPICIOUS" ? "⚠️" : "✅";
   let color = result.verdict === "DANGEROUS" ? "#ff3355" : result.verdict === "SUSPICIOUS" ? "#ffd166" : "#00ff99";
+  let borderColor = result.verdict === "DANGEROUS" ? "rgba(255,51,85,0.35)" : result.verdict === "SUSPICIOUS" ? "rgba(255,209,102,0.35)" : "rgba(0,255,153,0.35)";
+  let bg = result.verdict === "DANGEROUS" ? "rgba(255,51,85,0.06)" : result.verdict === "SUSPICIOUS" ? "rgba(255,209,102,0.06)" : "rgba(0,255,153,0.06)";
+
   let breakdownHtml = "";
   if (result.triggered.length > 0) {
-    breakdownHtml = `<br><small style="color:#9aa8a1;">${result.triggered.map(t => "• " + t).join(" &nbsp; ")}</small>`;
+    breakdownHtml = `<div style="margin-top:10px;font-size:12px;color:#9aa8a1;line-height:1.7;">${result.triggered.map(t => `<span style="display:inline-block;margin-right:12px;">• ${t}</span>`).join("")}</div>`;
   } else {
-    breakdownHtml = `<br><small style="color:#9aa8a1;">• No suspicious patterns detected</small>`;
+    breakdownHtml = `<div style="margin-top:10px;font-size:12px;color:#9aa8a1;">• No suspicious patterns detected</div>`;
   }
 
-  document.getElementById("result").innerHTML =
-    `<span style="color:${color}">${icon} ${result.verdict} — Risk Score: ${result.score}/100</span>${breakdownHtml}`;
+  const resultEl = document.getElementById("result");
+  resultEl.style.background = bg;
+  resultEl.style.border = `1px solid ${borderColor}`;
+  resultEl.style.boxShadow = `0 0 20px ${borderColor}`;
+  resultEl.innerHTML =
+    `<span style="color:${color};font-size:15px;font-weight:bold;letter-spacing:1px;">${icon} ${result.verdict} — Risk Score: ${result.score}/100</span>${breakdownHtml}`;
 
   // Save to localStorage
   const ts = new Date().toLocaleString();
@@ -755,15 +785,15 @@ function updateRiskUI() {
   if (badge) {
     badge.classList.remove("status-safe", "status-suspicious", "status-phishing");
     if (lastRiskStatus === "Phishing" || lastRiskStatus === "DANGEROUS") {
-      badge.textContent = "Dangerous";
+      badge.innerHTML = '<i class="fas fa-triangle-exclamation"></i> Dangerous';
       badge.classList.add("status-phishing");
       if (detail) detail.textContent = "High risk indicators detected";
     } else if (lastRiskStatus === "Suspicious" || lastRiskStatus === "SUSPICIOUS") {
-      badge.textContent = "Suspicious";
+      badge.innerHTML = '<i class="fas fa-circle-exclamation"></i> Suspicious';
       badge.classList.add("status-suspicious");
       if (detail) detail.textContent = "Review recommended";
     } else {
-      badge.textContent = "Safe";
+      badge.innerHTML = '<i class="fas fa-circle-check"></i> Safe';
       badge.classList.add("status-safe");
       if (detail) detail.textContent = "No active threats";
     }
@@ -899,7 +929,18 @@ function displayGenericResult(resultElId, logPrefix, result) {
 
   const resultEl = document.getElementById(resultElId);
   if (resultEl) {
-    resultEl.innerHTML = `${result.label} (Score: ${result.score})<br><small>${result.reasons.join(" • ")}</small>`;
+    const isHigh = result.label.includes("HIGH RISK");
+    const isSusp = result.label.includes("SUSPICIOUS");
+    const color  = isHigh ? "#ff3355" : isSusp ? "#ffd166" : "#00ff99";
+    const border = isHigh ? "rgba(255,51,85,0.35)" : isSusp ? "rgba(255,209,102,0.35)" : "rgba(0,255,153,0.35)";
+    const bg     = isHigh ? "rgba(255,51,85,0.06)"  : isSusp ? "rgba(255,209,102,0.06)" : "rgba(0,255,153,0.06)";
+    resultEl.style.background  = bg;
+    resultEl.style.border      = `1px solid ${border}`;
+    resultEl.style.boxShadow   = `0 0 20px ${border}`;
+    const reasonsHtml = result.reasons.length
+      ? `<div style="margin-top:10px;font-size:12px;color:#9aa8a1;line-height:1.7;">${result.reasons.map(r => `<span style="display:inline-block;margin-right:12px;">• ${r}</span>`).join("")}</div>`
+      : "";
+    resultEl.innerHTML = `<span style="color:${color};font-size:15px;font-weight:bold;letter-spacing:1px;">${result.label} (Score: ${result.score})</span>${reasonsHtml}`;
     setTimeout(() => { resultEl.scrollIntoView({ behavior: "smooth", block: "nearest" }); }, 300);
   }
 
@@ -926,11 +967,15 @@ const scannerMap = {
 };
 
 document.querySelectorAll(".card").forEach((card) => {
-  const key = card.textContent.trim();
+  const key = (card.dataset.type || card.textContent).trim();
   if (scannerMap[key]) {
     card.addEventListener("click", () => {
       hideAllScanners();
-      document.getElementById(scannerMap[key]).style.display = "block";
+      const target = document.getElementById(scannerMap[key]);
+      if (target) {
+        target.style.display = "block";
+        setTimeout(() => { target.scrollIntoView({ behavior: "smooth", block: "start" }); }, 80);
+      }
     });
   }
 });
@@ -939,7 +984,11 @@ document.querySelectorAll(".card").forEach((card) => {
 
 window.showUrlScanner = function () {
   hideAllScanners();
-  document.getElementById("scanner").style.display = "block";
+  const s = document.getElementById("scanner");
+  if (s) {
+    s.style.display = "block";
+    setTimeout(() => { s.scrollIntoView({ behavior: "smooth", block: "start" }); }, 80);
+  }
 };
 
 function hideAllScanners() {
