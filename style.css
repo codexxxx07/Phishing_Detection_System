@@ -1,9 +1,3 @@
-/* ============================================================
-   CODEX AI CYBER SHIELD — DESIGN SYSTEM
-   Theme: Dark cybersecurity, neon green #00ff99 accent
-   ============================================================ */
-
-/* ---- CUSTOM PROPERTIES ------------------------------------ */
 :root {
   --accent:       #00ff99;
   --accent-dim:   rgba(0, 255, 153, 0.6);
