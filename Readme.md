@@ -81,7 +81,8 @@ Press **Enter** to instantly scan links
 
 ## 📸 Preview
 
-> *(Add screenshots here for best impact)*
+> ![SS1](/assets/Screenshot%201.png)
+> ![SS2](/assets/Screenshot%202.png)
 
 ---
 
